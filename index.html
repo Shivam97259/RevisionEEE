@@ -2,7 +2,7 @@
 <html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>CosmoStudy - EEE Deep Space Flashcard Deck</title>
     <meta name="description" content="Distraction-free cosmological study web app with Instagram-style snap feed, grid navigation, and EEE flashcards." />
     <meta property="og:title" content="CosmoStudy - EEE Deep Space Flashcard Deck" />
@@ -96,9 +96,9 @@
         flex-shrink: 0;
       }
 
-      /* Safe area padding for mobile devices */
+      /* Safe area padding for mobile devices - guaranteed clearance from browser URL bar */
       .safe-top-header {
-        padding-top: max(env(safe-area-inset-top, 0px), 16px);
+        padding-top: max(env(safe-area-inset-top, 0px), 32px);
       }
       .safe-bottom-nav {
         padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
@@ -137,11 +137,11 @@
   </head>
   <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4 select-none">
 
-    <!-- DEDICATED MOBILE VIEWPORT FRAME (Sky Blue Gradient Canvas) -->
-    <div id="app-frame" class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-gradient-to-b from-sky-50 via-cyan-50/40 to-slate-50 sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-sky-100 overflow-hidden relative flex flex-col mx-auto">
+    <!-- DEDICATED MOBILE VIEWPORT FRAME -->
+    <div id="app-frame" class="w-full max-w-md min-h-[100dvh] h-[100dvh] sm:h-[844px] bg-gradient-to-b from-sky-50 via-cyan-50/40 to-slate-50 sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-sky-100 overflow-hidden relative flex flex-col mx-auto">
       
-      <!-- STICKY TOP HEADER -->
-      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-sky-100 px-5 pb-3 safe-top-header flex flex-col gap-2 shrink-0">
+      <!-- STICKY TOP HEADER (Guaranteed hard top spacer & clearance) -->
+      <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-sky-100 px-4 pt-8 sm:pt-6 pb-3 safe-top-header flex flex-col gap-2 shrink-0">
         <div class="flex items-center justify-between">
           
           <!-- Left: Clean Sky Blue Brand Presence -->
@@ -274,7 +274,7 @@
         </div>
 
         <!-- VIEW 1: FULL-HEIGHT REELS / FEED VIEW (EDGE-TO-EDGE SNAP SCROLL) -->
-        <section id="feed-screen" class="reels-feed-container flex-1 w-full h-[calc(100dvh-125px)] no-scrollbar relative">
+        <section id="feed-screen" class="reels-feed-container flex-1 w-full h-[calc(100dvh-140px)] no-scrollbar relative">
           <!-- Dynamically injected feed card items -->
           <div id="feed-items-list" class="w-full flex flex-col"></div>
         </section>
@@ -777,7 +777,7 @@
             
             // Full height card matching container with elevated surface and subtle border
             cardItem.className = 'reel-card-item w-full h-full relative flex flex-col justify-between overflow-hidden bg-white/95 border-b border-sky-100';
-            cardItem.style.height = 'calc(100dvh - 125px)';
+            cardItem.style.height = 'calc(100dvh - 140px)';
             cardItem.dataset.index = index;
             cardItem.dataset.id = item.id;
             cardItem.id = `feed-item-${index}`;
