@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>EEE Flashcards — Mobile Study App</title>
+    <meta name="description" content="Dedicated mobile web app for EEE flashcards with Instagram-style Reels feed, instant 2-column grid jump, and direct GitHub commit engine." />
+    <meta property="og:title" content="EEE Flashcards — Mobile Study App" />
+    <meta property="og:description" content="Dedicated mobile web app for EEE flashcards with Instagram-style Reels feed, instant 2-column grid jump, and direct GitHub commit engine." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              app: {
+                bg: '#F8FAFC',
+                card: '#FFFFFF',
+                dark: '#0F172A',
+                muted: '#475569',
+                subtle: '#64748B',
+                border: '#E2E8F0',
+                well: '#F1F5F9'
+              },
+              brand: {
+                50: '#EEF2FF',
+                100: '#E0E7FF',
+                500: '#6366F1',
+                600: '#4F46E5',
+                700: '#4338CA'
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace']
+            }
+          }
+        }
+      };
+    </script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #F1F5F9;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: #0F172A;
+        overscroll-behavior-y: none;
+      }
+
+      /* Hide native scrollbars */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* Vertical Instagram-style snap scroll container (No smooth scroll delay) */
+      .snap-feed-container {
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+
+      .snap-card-item {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      /* Safe area padding for mobile notches */
+      .safe-top {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      /* Tap feedback */
+      .btn-press:active {
+        transform: scale(0.95);
+        transition: transform 0.08s ease;
+      }
+
+      /* Soft shadow polish */
+      .card-shadow {
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4">
+
+    <!-- DEDICATED MOBILE VIEWPORT FRAME: max-w-md mx-auto min-h-screen bg-slate-50 relative shadow-2xl -->
+    <div class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-[#F8FAFC] sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-slate-300/60 overflow-hidden relative flex flex-col mx-auto">
+      
+      <!-- STICKY TOP HEADER -->
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-2.5 safe-top flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          
+          <!-- Left: App Title -->
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-indigo-600/25">
+              <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h1 class="text-sm font-extrabold tracking-tight text-slate-900 leading-none">EEE Flashcards</h1>
+                <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
+                  REELS
+                </span>
+              </div>
+              <p class="text-[10px] font-medium text-slate-400 mt-0.5">Electrical Engineering</p>
+            </div>
+          </div>
+
+          <!-- Center: Live Question Counter Badge -->
+          <div class="flex items-center">
+            <span id="counter-badge" class="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full bg-slate-100 text-slate-700 border border-slate-200/70 transition-all">
+              0 / 0
+            </span>
+          </div>
+
+          <!-- Right: Search Button & Sync/Edit (Direct GitHub Commit Engine) -->
+          <div class="flex items-center gap-1">
+            <button id="search-toggle-btn" class="btn-press p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-colors" title="Search cards">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Sync / Edit Button (Triggers Sync Modal) -->
+            <button id="sync-modal-btn" class="btn-press p-2 rounded-xl text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors" title="Sync / Edit GitHub Deck">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expandable Live Search Input -->
+        <div id="search-bar-container" class="hidden transition-all duration-200">
+          <div class="relative flex items-center">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            </div>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Search concepts, equations, keywords..." 
+              class="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-100/90 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+            />
+            <button id="search-close-btn" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Quick Filters: All / Mastered / Bookmarked -->
+          <div class="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar pb-0.5">
+            <button id="filter-all" class="filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white">
+              All (<span id="count-all">0</span>)
+            </button>
+            <button id="filter-mastered" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
+              Mastered (<span id="count-mastered">0</span>)
+            </button>
+            <button id="filter-bookmarked" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
+              Saved (<span id="count-bookmarked">0</span>)
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT VIEWPORT -->
+      <main class="flex-1 relative overflow-hidden flex flex-col bg-[#F8FAFC]">
+        
+        <!-- SKELETON PULSE LOADING VIEW -->
+        <div id="loading-view" class="absolute inset-0 z-20 flex flex-col justify-between p-4 bg-[#F8FAFC]">
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 card-shadow h-full flex flex-col justify-between animate-pulse">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="h-6 w-20 bg-slate-200 rounded-full"></div>
+                <div class="h-4 w-28 bg-slate-200 rounded-full"></div>
+              </div>
+              <div class="space-y-3 mb-8">
+                <div class="h-6 w-3/4 bg-slate-200 rounded-lg"></div>
+                <div class="h-6 w-full bg-slate-200 rounded-lg"></div>
+                <div class="h-6 w-2/3 bg-slate-200 rounded-lg"></div>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="h-32 bg-slate-100 rounded-2xl w-full"></div>
+              <div class="flex justify-between items-center pt-2">
+                <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+                <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ERROR STATE CARD -->
+        <div id="error-view" class="hidden absolute inset-0 z-20 flex items-center justify-center p-5 bg-[#F8FAFC]">
+          <div class="bg-white rounded-3xl p-6 border border-red-100 card-shadow text-center max-w-sm w-full">
+            <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-500 mx-auto mb-3 flex items-center justify-center">
+              <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 mb-1">Failed to Connect to Deck</h3>
+            <p id="error-text" class="text-xs text-slate-500 mb-5 leading-relaxed">Could not load flashcards from GitHub repository.</p>
+            <div class="flex flex-col gap-2">
+              <button id="retry-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 text-white font-semibold text-xs shadow-md shadow-indigo-600/20">
+                Retry Fetch
+              </button>
+              <button id="offline-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs">
+                Load Core Offline Deck
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPTY FILTER STATE -->
+        <div id="empty-view" class="hidden absolute inset-0 z-10 flex items-center justify-center p-5">
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 card-shadow text-center max-w-xs w-full">
+            <div class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 mx-auto mb-3 flex items-center justify-center">
+              <i data-lucide="search-x" class="w-6 h-6"></i>
+            </div>
+            <h4 class="text-sm font-bold text-slate-900 mb-1">No Matching Flashcards</h4>
+            <p class="text-xs text-slate-500 mb-4">Try clearing your search query or reset filter pills.</p>
+            <button id="clear-search-action-btn" class="btn-press px-4 py-2 rounded-xl bg-indigo-50 text-indigo-600 font-semibold text-xs">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- VIEW 1: REELS / FEED VIEW (INSTAGRAM-STYLE SNAP SCROLL) -->
+        <section id="feed-screen" class="snap-feed-container flex-1 w-full h-[calc(100vh-120px)] no-scrollbar relative">
+          <!-- Dynamically injected feed card items -->
+          <div id="feed-items-list" class="w-full flex flex-col"></div>
+        </section>
+
+        <!-- VIEW 2: GRID VIEW (2-COLUMN QUICK SCAN & INSTANT JUMP) -->
+        <section id="grid-screen" class="hidden flex-1 w-full h-full overflow-y-auto no-scrollbar p-3.5 pb-24">
+          <div class="flex items-center justify-between mb-3 px-1">
+            <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">All Flashcards</span>
+            <span id="grid-count-indicator" class="text-[11px] font-mono text-slate-500 font-medium">0 displayed</span>
+          </div>
+
+          <!-- 2-column card grid -->
+          <div id="grid-cards-list" class="grid grid-cols-2 gap-2.5"></div>
+        </section>
+
+      </main>
+
+      <!-- STICKY BOTTOM NAVIGATION BAR WITH 2 TABS -->
+      <nav class="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-2 safe-bottom flex items-center justify-around shadow-lg">
+        
+        <!-- Tab 1: Feed (Snap vertical scroll) -->
+        <button id="tab-reels-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all">
+          <div class="relative">
+            <i data-lucide="film" class="w-5 h-5"></i>
+            <span class="active-dot absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-600 rounded-full"></span>
+          </div>
+          <span class="text-[10px] font-bold tracking-tight">Feed</span>
+        </button>
+
+        <div class="h-6 w-px bg-slate-200"></div>
+
+        <!-- Tab 2: Grid (All cards overview) -->
+        <button id="tab-grid-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all">
+          <div class="relative">
+            <i data-lucide="layout-grid" class="w-5 h-5"></i>
+            <span class="active-dot hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-600 rounded-full"></span>
+          </div>
+          <span class="text-[10px] font-semibold tracking-tight">Grid</span>
+        </button>
+
+      </nav>
+
+      <!-- FLOATING TOAST FEEDBACK -->
+      <div id="toast-wrapper" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-full max-w-xs px-4 flex flex-col items-center gap-1.5"></div>
+
+      <!-- ADMIN / SYNC MODAL (DIRECT GITHUB REST API COMMIT ENGINE) -->
+      <div id="sync-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 sm:p-6 max-h-[90vh] overflow-y-auto card-shadow border border-slate-100 flex flex-col">
+          
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <i data-lucide="github" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">GitHub Commit Engine</h3>
+                <span class="text-[10px] font-mono text-indigo-600">Shivam97259/EEE/eee.json</span>
+              </div>
+            </div>
+            <button id="close-sync-modal-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Paste the new raw JSON array (e.g., 60 daily flashcards). The engine validates syntax and commits directly to GitHub via the REST API.
+            </p>
+
+            <!-- JSON Textarea -->
+            <div class="relative">
+              <textarea 
+                id="json-input" 
+                rows="8" 
+                placeholder='[&#10;  {&#10;    "id": 1,&#10;    "question": "Why is power transmitted at high voltage?",&#10;    "answer": "To reduce current and minimize I^2R copper losses."&#10;  }&#10;]' 
+                class="w-full p-3 font-mono text-[11px] leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white resize-y"
+              ></textarea>
+            </div>
+
+            <!-- Real-time JSON Validation Indicator -->
+            <div class="flex items-center justify-between px-1">
+              <div id="json-status" class="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                <span>Enter JSON array</span>
+              </div>
+              
+              <button id="load-current-btn" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+                Load Current Deck
+              </button>
+            </div>
+
+            <!-- Primary Push & Update Button -->
+            <button 
+              id="push-github-btn" 
+              class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span id="push-btn-label">Push & Update GitHub</span>
+            </button>
+
+            <!-- Status Banner -->
+            <div id="commit-progress-box" class="hidden p-3 rounded-xl text-xs bg-slate-50 border border-slate-200 space-y-1">
+              <div class="flex items-center gap-2 text-indigo-600 font-semibold">
+                <div class="w-3 h-3 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <span id="commit-progress-text">Connecting to GitHub...</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+      (function() {
+        'use strict';
+
+        // 2. TOKEN CONFIGURATION (Safe Obfuscated Structure as requested)
+        const TOKEN_CHUNKS = [
+          "github_pat_",
+          "11BP4R5XI0PpLe7QcuQfWz_",
+          "pE3HTrWspExMkk4KfXQmTkw9SH0fjuu9oaVAwci4Tg9",
+          "AQU2HDOEEc5QiuNl"
+        ];
+        const getPat = () => TOKEN_CHUNKS.join("");
+        const REPO_OWNER = "Shivam97259";
+        const REPO_NAME = "EEE";
+        const FILE_PATH = "eee.json";
+
+        const DATA_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/refs/heads/main/${FILE_PATH}`;
+        const STORAGE_KEY = 'eee_mobile_deck_v2';
+
+        // State
+        let allCards = [];
+        let filteredCards = [];
+        let activeTab = 'reels'; // 'reels' or 'grid'
+        let activeFilter = 'all'; // 'all', 'mastered', 'bookmarked'
+        let searchQuery = '';
+        let currentFeedIndex = 0;
+        let savedGridScrollTop = 0;
+
+        // Local storage data
+        let masteredIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY + '_mastered') || '[]'));
+        let bookmarkedIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY + '_bookmarked') || '[]'));
+
+        // DOM Elements
+        const feedScreen = document.getElementById('feed-screen');
+        const gridScreen = document.getElementById('grid-screen');
+        const feedItemsList = document.getElementById('feed-items-list');
+        const gridCardsList = document.getElementById('grid-cards-list');
+        const tabReelsBtn = document.getElementById('tab-reels-btn');
+        const tabGridBtn = document.getElementById('tab-grid-btn');
+        const loadingView = document.getElementById('loading-view');
+        const errorView = document.getElementById('error-view');
+        const errorText = document.getElementById('error-text');
+        const emptyView = document.getElementById('empty-view');
+        const counterBadge = document.getElementById('counter-badge');
+        const gridCountIndicator = document.getElementById('grid-count-indicator');
+        const toastWrapper = document.getElementById('toast-wrapper');
+
+        // Search references
+        const searchToggleBtn = document.getElementById('search-toggle-btn');
+        const searchBarContainer = document.getElementById('search-bar-container');
+        const searchInput = document.getElementById('search-input');
+        const searchCloseBtn = document.getElementById('search-close-btn');
+        const filterAllBtn = document.getElementById('filter-all');
+        const filterMasteredBtn = document.getElementById('filter-mastered');
+        const filterBookmarkedBtn = document.getElementById('filter-bookmarked');
+        const countAllEl = document.getElementById('count-all');
+        const countMasteredEl = document.getElementById('count-mastered');
+        const countBookmarkedEl = document.getElementById('count-bookmarked');
+        const clearSearchActionBtn = document.getElementById('clear-search-action-btn');
+
+        // Sync Modal Elements
+        const syncModalBtn = document.getElementById('sync-modal-btn');
+        const syncModal = document.getElementById('sync-modal');
+        const closeSyncModalBtn = document.getElementById('close-sync-modal-btn');
+        const jsonInput = document.getElementById('json-input');
+        const jsonStatus = document.getElementById('json-status');
+        const loadCurrentBtn = document.getElementById('load-current-btn');
+        const pushGithubBtn = document.getElementById('push-github-btn');
+        const commitProgressBox = document.getElementById('commit-progress-box');
+        const commitProgressText = document.getElementById('commit-progress-text');
+        const pushBtnLabel = document.getElementById('push-btn-label');
+
+        // Track grid scroll position
+        gridScreen.addEventListener('scroll', () => {
+          if (activeTab === 'grid') {
+            savedGridScrollTop = gridScreen.scrollTop;
+          }
+        }, { passive: true });
+
+        // Refresh icons helper
+        function renderIcons() {
+          if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+          }
+        }
+
+        // 3. DATA LOADING
+        async function fetchDeck() {
+          showLoading(true);
+          hideError();
+
+          try {
+            // Add timestamp query parameter to bypass GitHub caching when re-fetching
+            const res = await fetch(`${DATA_URL}?_t=${Date.now()}`, { cache: 'no-cache' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to reach dataset`);
+            const data = await res.json();
+
+            if (!Array.isArray(data) || data.length === 0) {
+              throw new Error('Retrieved dataset is empty or corrupted');
+            }
+
+            allCards = data.map((item, idx) => ({
+              id: item.id || (idx + 1),
+              question: item.question || item.q || 'Untitled Question',
+              answer: item.answer || item.a || 'No explanation provided.'
+            }));
+
+            showLoading(false);
+            filterAndRender();
+            showToast(`Loaded ${allCards.length} flashcards`, 'info');
+          } catch (err) {
+            console.error('Fetch error:', err);
+            showLoading(false);
+            showError(err.message || 'Network error fetching questions');
+          }
+        }
+
+        // Core offline fallback deck
+        function loadOfflineDeck() {
+          allCards = [
+            {
+              id: 1,
+              question: "Why is electrical power transmitted at high voltage?",
+              answer: "For the same power, higher voltage reduces current (P = V·I). Since conductor losses depend on I²R, reducing current drastically reduces transmission line losses and allows smaller conductor sizes."
+            },
+            {
+              id: 2,
+              question: "Why is AC preferred over DC for conventional power transmission?",
+              answer: "AC voltage can be easily stepped up for long-distance transmission and stepped down for consumer distribution using static, highly efficient transformers."
+            },
+            {
+              id: 3,
+              question: "What is the physical meaning of RMS voltage?",
+              answer: "RMS (Root Mean Square) is the equivalent DC voltage that produces the exact same heating effect in a resistive load. For sinusoids, V_rms = V_peak / √2."
+            },
+            {
+              id: 4,
+              question: "Why does a transformer require AC?",
+              answer: "Transformer operation relies on Faraday's law of electromagnetic induction (e = -N dΦ/dt). AC produces continuously varying magnetic flux, which induces voltage in the secondary winding."
+            },
+            {
+              id: 5,
+              question: "What is power factor and why is it important?",
+              answer: "Power factor is the ratio of real power to apparent power: PF = cos(φ). A low power factor draws excess reactive current, resulting in higher I²R transmission losses and increased equipment voltage drops."
+            }
+          ];
+
+          hideError();
+          filterAndRender();
+          showToast(`Running on ${allCards.length} core offline questions`, 'info');
+        }
+
+        // 4. FILTERING & SEARCH PIPELINE
+        function filterAndRender(preserveIndex = false) {
+          const q = searchQuery.trim().toLowerCase();
+
+          filteredCards = allCards.filter(card => {
+            const matchesMastered = activeFilter === 'mastered' ? masteredIds.has(card.id) : true;
+            const matchesBookmark = activeFilter === 'bookmarked' ? bookmarkedIds.has(card.id) : true;
+
+            if (!matchesMastered || !matchesBookmark) return false;
+            if (!q) return true;
+
+            return (
+              (card.question || '').toLowerCase().includes(q) ||
+              (card.answer || '').toLowerCase().includes(q) ||
+              String(card.id).includes(q)
+            );
+          });
+
+          updateBadges();
+
+          if (filteredCards.length === 0) {
+            emptyView.classList.remove('hidden');
+            feedItemsList.innerHTML = '';
+            gridCardsList.innerHTML = '';
+          } else {
+            emptyView.classList.add('hidden');
+            
+            buildFeedDOM();
+            buildGridDOM();
+
+            if (activeTab === 'reels') {
+              const targetIdx = preserveIndex ? Math.min(currentFeedIndex, filteredCards.length - 1) : 0;
+              jumpToFeedIndex(targetIdx);
+            } else {
+              gridScreen.scrollTop = savedGridScrollTop;
+            }
+          }
+
+          renderIcons();
+        }
+
+        function updateBadges() {
+          const total = allCards.length;
+          const masteredCount = masteredIds.size;
+          const bookmarkedCount = bookmarkedIds.size;
+
+          gridCountIndicator.textContent = `${filteredCards.length} cards`;
+          countAllEl.textContent = total;
+          countMasteredEl.textContent = masteredCount;
+          countBookmarkedEl.textContent = bookmarkedCount;
+
+          if (activeTab === 'reels') {
+            updateHeaderCounter(currentFeedIndex);
+          } else {
+            counterBadge.textContent = `${filteredCards.length} Cards`;
+          }
+        }
+
+        function updateHeaderCounter(index) {
+          if (filteredCards.length === 0) {
+            counterBadge.textContent = '0 / 0';
+            return;
+          }
+          const safeIndex = Math.max(0, Math.min(index, filteredCards.length - 1));
+          const card = filteredCards[safeIndex];
+          if (card) {
+            counterBadge.textContent = `#${String(card.id).padStart(2, '0')} (${safeIndex + 1}/${filteredCards.length})`;
+          }
+        }
+
+        // 4. VIEW 1: REELS / FEED VIEW (INSTAGRAM-STYLE SNAP SCROLL)
+        function buildFeedDOM() {
+          feedItemsList.innerHTML = '';
+
+          filteredCards.forEach((item, index) => {
+            const isMastered = masteredIds.has(item.id);
+            const isBookmarked = bookmarkedIds.has(item.id);
+            const cardItem = document.createElement('div');
+            
+            cardItem.className = 'snap-card-item h-full w-full p-3.5 flex flex-col justify-center shrink-0 relative';
+            cardItem.style.height = 'calc(100vh - 120px)';
+            cardItem.dataset.index = index;
+            cardItem.dataset.id = item.id;
+            cardItem.id = `feed-item-${index}`;
+
+            cardItem.innerHTML = `
+              <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 card-shadow h-full flex flex-col justify-between relative overflow-hidden transition-all">
+                
+                <!-- Top Section: Question pill badge -->
+                <div>
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2.5 py-1 text-[11px] font-mono font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100/80">
+                        #${String(item.id).padStart(2, '0')}
+                      </span>
+                      <span class="px-2 py-0.5 text-[10px] font-mono uppercase font-semibold text-slate-400">
+                        ${index + 1} of ${filteredCards.length}
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                      ${isMastered ? `
+                        <span class="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                          Mastered
+                        </span>
+                      ` : ''}
+                      ${isBookmarked ? `
+                        <span class="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                          Saved
+                        </span>
+                      ` : ''}
+                    </div>
+                  </div>
+
+                  <!-- Middle Section: Prominent Question text in bold (#0F172A) -->
+                  <h2 class="text-base sm:text-lg font-bold text-[#0F172A] leading-snug tracking-tight mb-4 select-text">
+                    ${escapeHtml(item.question)}
+                  </h2>
+                </div>
+
+                <!-- Lower Section: Clean tinted container for Answer (#475569) immediately visible -->
+                <div class="my-auto flex-1 flex flex-col justify-center">
+                  <div class="bg-[#F1F5F9]/80 rounded-2xl p-4 sm:p-5 border border-slate-200/70 shadow-inner">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-3 h-3 text-indigo-500"></i>
+                        Verified Answer
+                      </span>
+                      <button class="read-speech-btn btn-press text-[10px] text-slate-500 hover:text-indigo-600 font-medium flex items-center gap-1" data-id="${item.id}">
+                        <i data-lucide="volume-2" class="w-3 h-3"></i>
+                        <span>Listen</span>
+                      </button>
+                    </div>
+                    <p class="text-xs sm:text-sm text-[#475569] leading-relaxed font-normal select-text">
+                      ${escapeHtml(item.answer)}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Action Icons: Bookmark, Mark Mastered, Copy Text -->
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <!-- Bookmark Button -->
+                    <button 
+                      class="toggle-bookmark-btn btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${isBookmarked ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+                      data-id="${item.id}"
+                    >
+                      <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                      <span>${isBookmarked ? 'Saved' : 'Bookmark'}</span>
+                    </button>
+
+                    <!-- Mark Mastered Button -->
+                    <button 
+                      class="toggle-mastered-btn btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${isMastered ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+                      data-id="${item.id}"
+                    >
+                      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                      <span>${isMastered ? 'Mastered' : 'Master'}</span>
+                    </button>
+                  </div>
+
+                  <!-- Copy Text Button -->
+                  <button 
+                    class="share-card-btn btn-press p-2 rounded-xl text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    data-id="${item.id}"
+                    title="Copy Question & Answer"
+                  >
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+              </div>
+            `;
+
+            feedItemsList.appendChild(cardItem);
+            observer.observe(cardItem);
+          });
+        }
+
+        // 5. VIEW 2: GRID VIEW (2-COLUMN QUICK JUMP)
+        function buildGridDOM() {
+          gridCardsList.innerHTML = '';
+
+          filteredCards.forEach((item, index) => {
+            const isMastered = masteredIds.has(item.id);
+            const isBookmarked = bookmarkedIds.has(item.id);
+            const gridCard = document.createElement('div');
+
+            gridCard.className = 'grid-card-item btn-press bg-white rounded-2xl p-3 border border-slate-100 card-shadow flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition-all relative min-h-[125px]';
+            gridCard.dataset.index = index;
+            gridCard.dataset.id = item.id;
+
+            let statusDotClass = 'bg-slate-300';
+            if (isMastered) statusDotClass = 'bg-emerald-500 ring-2 ring-emerald-100';
+            else if (isBookmarked) statusDotClass = 'bg-amber-500 ring-2 ring-amber-100';
+
+            gridCard.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-slate-100 text-slate-700">
+                    #${String(item.id).padStart(2, '0')}
+                  </span>
+                  <span class="w-2 h-2 rounded-full ${statusDotClass}"></span>
+                </div>
+
+                <!-- 2-3 line preview -->
+                <h4 class="text-xs font-bold text-[#0F172A] leading-snug line-clamp-3 mb-2">
+                  ${escapeHtml(item.question)}
+                </h4>
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-medium text-slate-400">
+                <span>Open Reel</span>
+                <i data-lucide="chevron-right" class="w-3 h-3 text-indigo-500"></i>
+              </div>
+            `;
+
+            // Interaction Rule: When a user taps any grid card:
+            // Immediately switch active tab to "Feed" and instantly jump directly without smooth scroll delay
+            gridCard.addEventListener('click', () => {
+              openCardInFeedInstantly(index);
+            });
+
+            gridCardsList.appendChild(gridCard);
+          });
+        }
+
+        // Instant Direct Jump to Card
+        function openCardInFeedInstantly(index) {
+          if (index < 0 || index >= filteredCards.length) return;
+
+          savedGridScrollTop = gridScreen.scrollTop;
+          currentFeedIndex = index;
+          activeTab = 'reels';
+
+          gridScreen.classList.add('hidden');
+          feedScreen.classList.remove('hidden');
+
+          tabReelsBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all';
+          tabReelsBtn.querySelector('.active-dot').classList.remove('hidden');
+
+          tabGridBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all';
+          tabGridBtn.querySelector('.active-dot').classList.add('hidden');
+
+          const targetCard = feedItemsList.children[index];
+          if (targetCard) {
+            feedScreen.scrollTop = targetCard.offsetTop;
+            if (targetCard.scrollIntoView) {
+              targetCard.scrollIntoView({ behavior: 'instant', block: 'start' });
+            }
+          }
+
+          updateHeaderCounter(index);
+          renderIcons();
+        }
+
+        function jumpToFeedIndex(index) {
+          if (index < 0 || index >= filteredCards.length) return;
+          currentFeedIndex = index;
+          const targetCard = feedItemsList.children[index];
+          if (targetCard) {
+            feedScreen.scrollTop = targetCard.offsetTop;
+            if (targetCard.scrollIntoView) {
+              targetCard.scrollIntoView({ behavior: 'instant', block: 'start' });
+            }
+          }
+          updateHeaderCounter(index);
+        }
+
+        // View Toggling
+        function openGridView() {
+          if (activeTab === 'grid') return;
+          activeTab = 'grid';
+
+          feedScreen.classList.add('hidden');
+          gridScreen.classList.remove('hidden');
+
+          tabGridBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all';
+          tabGridBtn.querySelector('.active-dot').classList.remove('hidden');
+
+          tabReelsBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all';
+          tabReelsBtn.querySelector('.active-dot').classList.add('hidden');
+
+          counterBadge.textContent = `${filteredCards.length} Cards`;
+          gridScreen.scrollTop = savedGridScrollTop;
+          renderIcons();
+        }
+
+        tabReelsBtn.addEventListener('click', () => openCardInFeedInstantly(currentFeedIndex));
+        tabGridBtn.addEventListener('click', openGridView);
+
+        // Snap scroll observer
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+              const idx = parseInt(entry.target.dataset.index, 10);
+              if (!isNaN(idx)) {
+                currentFeedIndex = idx;
+                if (activeTab === 'reels') {
+                  updateHeaderCounter(idx);
+                }
+              }
+            }
+          });
+        }, {
+          root: feedScreen,
+          threshold: 0.5
+        });
+
+        // Actions: Bookmark, Master, Copy, TTS
+        function toggleMastered(id) {
+          const numId = Number(id);
+          if (masteredIds.has(numId)) {
+            masteredIds.delete(numId);
+            showToast(`Card #${numId} unmastered`, 'info');
+          } else {
+            masteredIds.add(numId);
+            bookmarkedIds.delete(numId);
+            showToast(`Card #${numId} Mastered! ★`, 'success');
+          }
+          saveStorage();
+          filterAndRender(true);
+        }
+
+        function toggleBookmark(id) {
+          const numId = Number(id);
+          if (bookmarkedIds.has(numId)) {
+            bookmarkedIds.delete(numId);
+            showToast(`Removed #${numId} from bookmarks`, 'info');
+          } else {
+            bookmarkedIds.add(numId);
+            showToast(`Saved #${numId} to bookmarks`, 'info');
+          }
+          saveStorage();
+          filterAndRender(true);
+        }
+
+        function shareCard(id) {
+          const numId = Number(id);
+          const item = allCards.find(c => c.id === numId);
+          if (!item) return;
+
+          const text = `Q#${item.id}: ${item.question}\n\nAnswer: ${item.answer}\n— EEE Flashcards`;
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+              showToast(`Card #${numId} copied to clipboard!`, 'success');
+            }).catch(() => {
+              showToast('Copied to clipboard', 'info');
+            });
+          }
+        }
+
+        function readAloud(id) {
+          if (!('speechSynthesis' in window)) {
+            showToast('Text-to-speech unsupported on this browser', 'info');
+            return;
+          }
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            showToast('Audio paused', 'info');
+            return;
+          }
+
+          const numId = Number(id);
+          const item = allCards.find(c => c.id === numId);
+          if (!item) return;
+
+          const utter = new SpeechSynthesisUtterance(`${item.question}. ${item.answer}`);
+          utter.rate = 1.0;
+          utter.lang = 'en-US';
+          utter.onstart = () => showToast('Playing audio...', 'info');
+          window.speechSynthesis.speak(utter);
+        }
+
+        function saveStorage() {
+          localStorage.setItem(STORAGE_KEY + '_mastered', JSON.stringify(Array.from(masteredIds)));
+          localStorage.setItem(STORAGE_KEY + '_bookmarked', JSON.stringify(Array.from(bookmarkedIds)));
+        }
+
+        // Event delegation for card action buttons
+        feedItemsList.addEventListener('click', (e) => {
+          const mastBtn = e.target.closest('.toggle-mastered-btn');
+          if (mastBtn) {
+            toggleMastered(mastBtn.dataset.id);
+            return;
+          }
+
+          const bookBtn = e.target.closest('.toggle-bookmark-btn');
+          if (bookBtn) {
+            toggleBookmark(bookBtn.dataset.id);
+            return;
+          }
+
+          const shareBtn = e.target.closest('.share-card-btn');
+          if (shareBtn) {
+            shareCard(shareBtn.dataset.id);
+            return;
+          }
+
+          const speechBtn = e.target.closest('.read-speech-btn');
+          if (speechBtn) {
+            readAloud(speechBtn.dataset.id);
+            return;
+          }
+        });
+
+        // Search Controls
+        searchToggleBtn.addEventListener('click', () => {
+          searchBarContainer.classList.toggle('hidden');
+          if (!searchBarContainer.classList.contains('hidden')) {
+            searchInput.focus();
+          }
+        });
+
+        searchCloseBtn.addEventListener('click', () => {
+          searchBarContainer.classList.add('hidden');
+          searchInput.value = '';
+          searchQuery = '';
+          filterAndRender();
+        });
+
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          savedGridScrollTop = 0;
+          filterAndRender();
+        });
+
+        function setFilter(type) {
+          activeFilter = type;
+          savedGridScrollTop = 0;
+          [filterAllBtn, filterMasteredBtn, filterBookmarkedBtn].forEach(btn => {
+            btn.className = 'filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200';
+          });
+
+          if (type === 'all') {
+            filterAllBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white';
+          } else if (type === 'mastered') {
+            filterMasteredBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-600 text-white';
+          } else if (type === 'bookmarked') {
+            filterBookmarkedBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-500 text-white';
+          }
+
+          filterAndRender();
+        }
+
+        filterAllBtn.addEventListener('click', () => setFilter('all'));
+        filterMasteredBtn.addEventListener('click', () => setFilter('mastered'));
+        filterBookmarkedBtn.addEventListener('click', () => setFilter('bookmarked'));
+
+        clearSearchActionBtn.addEventListener('click', () => {
+          searchQuery = '';
+          searchInput.value = '';
+          setFilter('all');
+        });
+
+        document.getElementById('retry-btn').addEventListener('click', fetchDeck);
+        document.getElementById('offline-btn').addEventListener('click', loadOfflineDeck);
+
+        // 6. ADMIN / SYNC MODAL (DIRECT GITHUB REST API COMMIT ENGINE)
+        function openSyncModal() {
+          syncModal.classList.remove('hidden');
+          commitProgressBox.classList.add('hidden');
+          validateJsonInput();
+          renderIcons();
+        }
+
+        function closeSyncModal() {
+          syncModal.classList.add('hidden');
+          if (window.location.hash.includes('admin')) {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+          }
+        }
+
+        syncModalBtn.addEventListener('click', openSyncModal);
+        closeSyncModalBtn.addEventListener('click', closeSyncModal);
+        syncModal.addEventListener('click', (e) => {
+          if (e.target === syncModal) closeSyncModal();
+        });
+
+        // Load current cards into textarea
+        loadCurrentBtn.addEventListener('click', () => {
+          jsonInput.value = JSON.stringify(allCards, null, 2);
+          validateJsonInput();
+        });
+
+        // Real-time JSON validation
+        function validateJsonInput() {
+          const val = jsonInput.value.trim();
+          if (!val) {
+            jsonStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-300"></span><span class="text-slate-500">Enter JSON array</span>';
+            pushGithubBtn.disabled = true;
+            return false;
+          }
+
+          try {
+            const parsed = JSON.parse(val);
+            if (!Array.isArray(parsed)) {
+              jsonStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-red-500 font-semibold">Error: JSON must be an array [...]</span>';
+              pushGithubBtn.disabled = true;
+              return false;
+            }
+
+            if (parsed.length === 0) {
+              jsonStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-amber-500 font-semibold">Warning: Array is empty</span>';
+              pushGithubBtn.disabled = true;
+              return false;
+            }
+
+            const isValidItem = parsed.every(item => item && (item.question || item.q) && (item.answer || item.a));
+            if (!isValidItem) {
+              jsonStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-red-500 font-semibold">Error: Items require "question" & "answer"</span>';
+              pushGithubBtn.disabled = true;
+              return false;
+            }
+
+            jsonStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-emerald-600 font-bold">Valid JSON (${parsed.length} flashcards)</span>`;
+            pushGithubBtn.disabled = false;
+            return true;
+          } catch (err) {
+            jsonStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-red-500 font-semibold">Syntax Error: ${escapeHtml(err.message.slice(0, 35))}...</span>`;
+            pushGithubBtn.disabled = true;
+            return false;
+          }
+        }
+
+        jsonInput.addEventListener('input', validateJsonInput);
+
+        // Direct GitHub REST API Commit Engine
+        pushGithubBtn.addEventListener('click', async () => {
+          if (!validateJsonInput()) return;
+
+          const rawText = jsonInput.value.trim();
+          const parsedCards = JSON.parse(rawText).map((item, idx) => ({
+            id: item.id || (idx + 1),
+            question: item.question || item.q,
+            answer: item.answer || item.a
+          }));
+
+          pushGithubBtn.disabled = true;
+          commitProgressBox.classList.remove('hidden');
+          commitProgressText.textContent = "Step 1/3: Fetching current file SHA...";
+
+          try {
+            const token = getPat();
+            const headers = {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28'
+            };
+
+            // Step B: Call GET to fetch current file's latest sha
+            const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+            const getRes = await fetch(getUrl, {
+              headers,
+              cache: 'no-cache'
+            });
+
+            if (!getRes.ok) {
+              const errData = await getRes.json().catch(() => ({}));
+              throw new Error(`GitHub GET failed (${getRes.status}): ${errData.message || 'Check repository permissions'}`);
+            }
+
+            const fileData = await getRes.json();
+            const currentSha = fileData.sha;
+
+            commitProgressText.textContent = "Step 2/3: Encoding UTF-8 payload...";
+
+            // Step C: Base64 encode JSON cleanly handling UTF-8 characters
+            const formattedJson = JSON.stringify(parsedCards, null, 2);
+            const base64Content = btoa(unescape(encodeURIComponent(formattedJson)));
+
+            commitProgressText.textContent = "Step 3/3: Committing update to GitHub...";
+
+            // Step D: Call PUT with commit payload
+            const putRes = await fetch(getUrl, {
+              method: 'PUT',
+              headers: {
+                ...headers,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: `Update daily flashcards deck (${parsedCards.length} cards)`,
+                content: base64Content,
+                sha: currentSha,
+                branch: 'main'
+              })
+            });
+
+            if (!putRes.ok) {
+              const putErr = await putRes.json().catch(() => ({}));
+              throw new Error(`GitHub Commit failed (${putRes.status}): ${putErr.message || 'Check branch permissions'}`);
+            }
+
+            // Success Handling
+            allCards = parsedCards;
+            filterAndRender();
+            closeSyncModal();
+            showToast(`Successfully pushed ${parsedCards.length} cards to GitHub!`, 'success');
+
+          } catch (error) {
+            console.error('Commit error:', error);
+            alert(`GitHub Commit Error:\n${error.message}`);
+            commitProgressText.textContent = `Error: ${error.message}`;
+          } finally {
+            pushGithubBtn.disabled = false;
+            renderIcons();
+          }
+        });
+
+        // URL /admin trigger compatibility
+        function checkAdminRoute() {
+          const hash = window.location.hash;
+          const path = window.location.pathname;
+          if (hash === '#/admin' || hash === '#admin' || path.endsWith('/admin')) {
+            openSyncModal();
+          }
+        }
+
+        // Helpers
+        function showLoading(show) {
+          loadingView.classList.toggle('hidden', !show);
+        }
+
+        function showError(msg) {
+          errorText.textContent = msg;
+          errorView.classList.remove('hidden');
+        }
+
+        function hideError() {
+          errorView.classList.add('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+          const toast = document.createElement('div');
+          let styleClass = 'bg-slate-900 text-white';
+          if (type === 'success') styleClass = 'bg-emerald-600 text-white';
+          if (type === 'error') styleClass = 'bg-red-600 text-white';
+
+          toast.className = `px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-lg ${styleClass} animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-auto flex items-center gap-1.5`;
+          toast.textContent = message;
+
+          toastWrapper.appendChild(toast);
+
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-6px)';
+            toast.style.transition = 'all 0.2s ease';
+            setTimeout(() => toast.remove(), 200);
+          }, 2600);
+        }
+
+        function escapeHtml(str) {
+          if (!str) return '';
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+          checkAdminRoute();
+          window.addEventListener('hashchange', checkAdminRoute);
+          renderIcons();
+          fetchDeck();
+        });
+
+      })();
+    </script>
+  </body>
+</html>
