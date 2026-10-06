@@ -3,17 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>EEE Flashcards — Mobile Study App</title>
-    <meta name="description" content="Dedicated mobile web app for EEE flashcards with Instagram-style Reels feed, instant 2-column grid jump, and direct GitHub commit engine." />
-    <meta property="og:title" content="EEE Flashcards — Mobile Study App" />
-    <meta property="og:description" content="Dedicated mobile web app for EEE flashcards with Instagram-style Reels feed, instant 2-column grid jump, and direct GitHub commit engine." />
+    <title>CosmoStudy - EEE Deep Space Flashcard Deck</title>
+    <meta name="description" content="Distraction-free cosmological study web app with Instagram-style snap feed, grid navigation, and EEE flashcards." />
+    <meta property="og:title" content="CosmoStudy - EEE Deep Space Flashcard Deck" />
+    <meta property="og:description" content="Distraction-free cosmological study web app with Instagram-style snap feed, grid navigation, and EEE flashcards." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,7 +27,6 @@
                 card: '#FFFFFF',
                 dark: '#0F172A',
                 muted: '#475569',
-                subtle: '#64748B',
                 border: '#E2E8F0',
                 well: '#F1F5F9'
               },
@@ -76,20 +75,28 @@
         scrollbar-width: none;
       }
 
-      /* Vertical Instagram-style snap scroll container (No smooth scroll delay) */
-      .snap-feed-container {
+      /* Instagram Reels vertical snap scroll container */
+      .reels-feed-container {
         scroll-snap-type: y mandatory;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .reels-feed-container::-webkit-scrollbar {
+        display: none;
       }
 
-      .snap-card-item {
+      .reel-card-item {
         scroll-snap-align: start;
         scroll-snap-stop: always;
+        height: 100%;
+        width: 100%;
+        flex-shrink: 0;
       }
 
-      /* Safe area padding for mobile notches */
+      /* Safe area padding for mobile devices */
       .safe-top {
         padding-top: env(safe-area-inset-top, 0px);
       }
@@ -97,65 +104,83 @@
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
 
-      /* Tap feedback */
+      /* Button press feedback */
       .btn-press:active {
         transform: scale(0.95);
         transition: transform 0.08s ease;
       }
 
-      /* Soft shadow polish */
+      /* Subtle shadow */
       .card-shadow {
-        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
       }
+
+      /* PIN error shake animation */
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-8px); }
+        40%, 80% { transform: translateX(8px); }
+      }
+      .animate-shake {
+        animation: shake 0.35s ease-in-out;
+      }
+
+      /* Audio wave pulsing animation */
+      @keyframes soundwave {
+        0%, 100% { height: 4px; }
+        50% { height: 14px; }
+      }
+      .audio-bar-1 { animation: soundwave 0.8s ease-in-out infinite; }
+      .audio-bar-2 { animation: soundwave 0.8s ease-in-out 0.2s infinite; }
+      .audio-bar-3 { animation: soundwave 0.8s ease-in-out 0.4s infinite; }
     </style>
   </head>
-  <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4">
+  <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4 select-none">
 
-    <!-- DEDICATED MOBILE VIEWPORT FRAME: max-w-md mx-auto min-h-screen bg-slate-50 relative shadow-2xl -->
-    <div class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-[#F8FAFC] sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-slate-300/60 overflow-hidden relative flex flex-col mx-auto">
+    <!-- DEDICATED MOBILE VIEWPORT FRAME (Clean Grounded Structure) -->
+    <div id="app-frame" class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-[#F8FAFC] sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-slate-200/80 overflow-hidden relative flex flex-col mx-auto">
       
       <!-- STICKY TOP HEADER -->
-      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-2.5 safe-top flex flex-col gap-2">
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-5 py-3 safe-top flex flex-col gap-2 shrink-0">
         <div class="flex items-center justify-between">
           
-          <!-- Left: App Title -->
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-indigo-600/25">
+          <!-- Left: Clean Brand Presence -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-indigo-600/30">
               <i data-lucide="zap" class="w-4 h-4 text-white"></i>
             </div>
             <div>
               <div class="flex items-center gap-1.5">
-                <h1 class="text-sm font-extrabold tracking-tight text-slate-900 leading-none">EEE Flashcards</h1>
-                <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
-                  REELS
-                </span>
+                <h1 class="text-sm font-bold tracking-tight text-slate-900">EEE Flashcards</h1>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold">DECK</span>
               </div>
-              <p class="text-[10px] font-medium text-slate-400 mt-0.5">Electrical Engineering</p>
+              <p class="text-[10px] text-slate-500 font-mono tracking-tight flex items-center gap-1">
+                <span id="counter-badge" class="text-indigo-600 font-semibold">Loading deck...</span>
+              </p>
             </div>
           </div>
 
-          <!-- Center: Live Question Counter Badge -->
-          <div class="flex items-center">
-            <span id="counter-badge" class="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full bg-slate-100 text-slate-700 border border-slate-200/70 transition-all">
-              0 / 0
-            </span>
-          </div>
-
-          <!-- Right: Search Button & Sync/Edit (Direct GitHub Commit Engine) -->
-          <div class="flex items-center gap-1">
-            <button id="search-toggle-btn" class="btn-press p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-colors" title="Search cards">
-              <i data-lucide="search" class="w-4 h-4"></i>
+          <!-- Right: Neatly Grouped Action Buttons -->
+          <div class="flex items-center gap-2">
+            <!-- Search Button -->
+            <button id="search-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Search cards">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
             </button>
 
-            <!-- Sync / Edit Button (Triggers Sync Modal) -->
-            <button id="sync-modal-btn" class="btn-press p-2 rounded-xl text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors" title="Sync / Edit GitHub Deck">
-              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+            <!-- Refresh Deck Button -->
+            <button id="refresh-deck-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Refresh deck from GitHub">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <!-- Admin Gate Button (Lock Icon - PIN 3605) -->
+            <button id="admin-gate-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 transition" title="Admin Upload & Sync (PIN: 3605)">
+              <i data-lucide="lock" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         </div>
 
         <!-- Expandable Live Search Input -->
-        <div id="search-bar-container" class="hidden transition-all duration-200">
+        <div id="search-bar-container" class="hidden transition-all duration-200 pt-1">
           <div class="relative flex items-center">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <i data-lucide="search" class="w-3.5 h-3.5"></i>
@@ -163,23 +188,23 @@
             <input 
               type="text" 
               id="search-input" 
-              placeholder="Search concepts, equations, keywords..." 
-              class="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-100/90 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+              placeholder="Search concepts, equations, circuits..." 
+              class="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all font-sans"
             />
             <button id="search-close-btn" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
               <i data-lucide="x" class="w-3.5 h-3.5"></i>
             </button>
           </div>
 
-          <!-- Quick Filters: All / Mastered / Bookmarked -->
+          <!-- Quick Filter Pills: All / Mastered / Saved -->
           <div class="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar pb-0.5">
-            <button id="filter-all" class="filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white">
+            <button id="filter-all" class="filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white font-sans">
               All (<span id="count-all">0</span>)
             </button>
-            <button id="filter-mastered" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <button id="filter-mastered" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-sans">
               Mastered (<span id="count-mastered">0</span>)
             </button>
-            <button id="filter-bookmarked" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <button id="filter-bookmarked" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-sans">
               Saved (<span id="count-bookmarked">0</span>)
             </button>
           </div>
@@ -190,25 +215,26 @@
       <main class="flex-1 relative overflow-hidden flex flex-col bg-[#F8FAFC]">
         
         <!-- SKELETON PULSE LOADING VIEW -->
-        <div id="loading-view" class="absolute inset-0 z-20 flex flex-col justify-between p-4 bg-[#F8FAFC]">
+        <div id="loading-view" class="absolute inset-0 z-20 flex flex-col justify-between p-5 bg-[#F8FAFC]">
           <div class="bg-white rounded-3xl p-6 border border-slate-100 card-shadow h-full flex flex-col justify-between animate-pulse">
             <div>
               <div class="flex items-center justify-between mb-6">
-                <div class="h-6 w-20 bg-slate-200 rounded-full"></div>
-                <div class="h-4 w-28 bg-slate-200 rounded-full"></div>
+                <div class="h-6 w-24 bg-slate-200 rounded-lg"></div>
+                <div class="h-4 w-28 bg-slate-200 rounded-lg"></div>
               </div>
               <div class="space-y-3 mb-8">
-                <div class="h-6 w-3/4 bg-slate-200 rounded-lg"></div>
+                <div class="h-6 w-4/5 bg-slate-200 rounded-lg"></div>
                 <div class="h-6 w-full bg-slate-200 rounded-lg"></div>
                 <div class="h-6 w-2/3 bg-slate-200 rounded-lg"></div>
               </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
               <div class="h-32 bg-slate-100 rounded-2xl w-full"></div>
-              <div class="flex justify-between items-center pt-2">
-                <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
-                <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+              <div class="flex justify-between gap-3 pt-2">
+                <div class="h-10 flex-1 bg-slate-200 rounded-xl"></div>
+                <div class="h-10 flex-1 bg-slate-200 rounded-xl"></div>
+                <div class="h-10 flex-1 bg-slate-200 rounded-xl"></div>
               </div>
             </div>
           </div>
@@ -223,7 +249,7 @@
             <h3 class="text-base font-bold text-slate-900 mb-1">Failed to Connect to Deck</h3>
             <p id="error-text" class="text-xs text-slate-500 mb-5 leading-relaxed">Could not load flashcards from GitHub repository.</p>
             <div class="flex flex-col gap-2">
-              <button id="retry-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 text-white font-semibold text-xs shadow-md shadow-indigo-600/20">
+              <button id="retry-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20">
                 Retry Fetch
               </button>
               <button id="offline-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs">
@@ -247,16 +273,19 @@
           </div>
         </div>
 
-        <!-- VIEW 1: REELS / FEED VIEW (INSTAGRAM-STYLE SNAP SCROLL) -->
-        <section id="feed-screen" class="snap-feed-container flex-1 w-full h-[calc(100vh-120px)] no-scrollbar relative">
+        <!-- VIEW 1: FULL-HEIGHT REELS / FEED VIEW (EDGE-TO-EDGE SNAP SCROLL) -->
+        <section id="feed-screen" class="reels-feed-container flex-1 w-full h-[calc(100dvh-125px)] no-scrollbar relative">
           <!-- Dynamically injected feed card items -->
           <div id="feed-items-list" class="w-full flex flex-col"></div>
         </section>
 
-        <!-- VIEW 2: GRID VIEW (2-COLUMN QUICK SCAN & INSTANT JUMP) -->
+        <!-- VIEW 2: GRID VIEW (CLEAN LIGHT 2-COLUMN MATRIX) -->
         <section id="grid-screen" class="hidden flex-1 w-full h-full overflow-y-auto no-scrollbar p-3.5 pb-24">
           <div class="flex items-center justify-between mb-3 px-1">
-            <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">All Flashcards</span>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">All Flashcards</span>
+            </div>
             <span id="grid-count-indicator" class="text-[11px] font-mono text-slate-500 font-medium">0 displayed</span>
           </div>
 
@@ -266,16 +295,16 @@
 
       </main>
 
-      <!-- STICKY BOTTOM NAVIGATION BAR WITH 2 TABS -->
-      <nav class="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-2 safe-bottom flex items-center justify-around shadow-lg">
+      <!-- GROUNDED BOTTOM NAVIGATION BAR (Strictly glued to bottom) -->
+      <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-slate-200 z-50 py-2.5 px-6 flex justify-around items-center safe-bottom shadow-lg">
         
         <!-- Tab 1: Feed (Snap vertical scroll) -->
         <button id="tab-reels-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all">
           <div class="relative">
             <i data-lucide="film" class="w-5 h-5"></i>
-            <span class="active-dot absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-600 rounded-full"></span>
+            <span class="active-dot absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
           </div>
-          <span class="text-[10px] font-bold tracking-tight">Feed</span>
+          <span class="text-[10px] font-bold tracking-tight">Reels</span>
         </button>
 
         <div class="h-6 w-px bg-slate-200"></div>
@@ -284,7 +313,7 @@
         <button id="tab-grid-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all">
           <div class="relative">
             <i data-lucide="layout-grid" class="w-5 h-5"></i>
-            <span class="active-dot hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-600 rounded-full"></span>
+            <span class="active-dot hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
           </div>
           <span class="text-[10px] font-semibold tracking-tight">Grid</span>
         </button>
@@ -294,7 +323,55 @@
       <!-- FLOATING TOAST FEEDBACK -->
       <div id="toast-wrapper" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-full max-w-xs px-4 flex flex-col items-center gap-1.5"></div>
 
-      <!-- ADMIN / SYNC MODAL (DIRECT GITHUB REST API COMMIT ENGINE) -->
+      <!-- PIN-PROTECTED ADMIN GATE MODAL (PIN: 3605) -->
+      <div id="pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+        <div id="pin-card" class="bg-white rounded-3xl w-full max-w-xs p-6 card-shadow border border-slate-100 flex flex-col items-center text-center relative transition-transform">
+          
+          <button id="close-pin-modal-btn" class="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Lock Icon Shield -->
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3.5 shadow-sm">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 mb-1">Admin Access Required</h3>
+          <p class="text-xs text-slate-500 mb-5">Enter security PIN (3605) to unlock the GitHub upload station.</p>
+
+          <form id="pin-form" class="w-full space-y-4">
+            <div class="relative">
+              <input 
+                type="password" 
+                id="pin-input" 
+                maxlength="4" 
+                inputmode="numeric" 
+                pattern="[0-9]*" 
+                placeholder="••••" 
+                autocomplete="off" 
+                class="w-full text-center text-2xl tracking-[0.5em] font-mono py-2.5 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <!-- Error message feedback -->
+            <div id="pin-error-text" class="hidden text-xs font-semibold text-rose-500 flex items-center justify-center gap-1">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>Incorrect PIN. Access Denied.</span>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-1.5"
+            >
+              <i data-lucide="key" class="w-3.5 h-3.5"></i>
+              <span>Verify PIN</span>
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- ADMIN / SYNC MODAL (DIRECT GITHUB REST API ENGINE VIA BACKEND PROXY) -->
       <div id="sync-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
         <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 sm:p-6 max-h-[90vh] overflow-y-auto card-shadow border border-slate-100 flex flex-col">
           
@@ -302,7 +379,9 @@
           <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <i data-lucide="github" class="w-4 h-4"></i>
+                <svg class="w-4 h-4 text-indigo-600 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
               </div>
               <div>
                 <h3 class="text-sm font-bold text-slate-900">GitHub Commit Engine</h3>
@@ -316,7 +395,7 @@
 
           <div class="space-y-3">
             <p class="text-xs text-slate-500 leading-relaxed">
-              Paste the new raw JSON array (e.g., 60 daily flashcards). The engine validates syntax and commits directly to GitHub via the REST API.
+              Paste the new raw JSON array (e.g. daily flashcards). The server merges new questions with existing ones without overwriting.
             </p>
 
             <!-- JSON Textarea -->
@@ -347,7 +426,7 @@
               class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-              <span id="push-btn-label">Push & Update GitHub</span>
+              <span id="push-btn-label">Merge & Push to GitHub</span>
             </button>
 
             <!-- Status Banner -->
@@ -369,22 +448,15 @@
       (function() {
         'use strict';
 
-        // 2. TOKEN CONFIGURATION (Safe Obfuscated Structure as requested)
-        const TOKEN_CHUNKS = [
-          "github_pat_",
-          "11BP4R5XI0PpLe7QcuQfWz_",
-          "pE3HTrWspExMkk4KfXQmTkw9SH0fjuu9oaVAwci4Tg9",
-          "AQU2HDOEEc5QiuNl"
-        ];
-        const getPat = () => TOKEN_CHUNKS.join("");
+        // 1. REPO CONFIGURATION
         const REPO_OWNER = "Shivam97259";
         const REPO_NAME = "EEE";
         const FILE_PATH = "eee.json";
 
-        const DATA_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/refs/heads/main/${FILE_PATH}`;
-        const STORAGE_KEY = 'eee_mobile_deck_v2';
+        const STORAGE_KEY = 'eee_light_deck_v1';
+        const TARGET_PIN = "3605";
 
-        // State
+        // Application State
         let allCards = [];
         let filteredCards = [];
         let activeTab = 'reels'; // 'reels' or 'grid'
@@ -392,6 +464,7 @@
         let searchQuery = '';
         let currentFeedIndex = 0;
         let savedGridScrollTop = 0;
+        let activeAudioId = null;
 
         // Local storage data
         let masteredIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY + '_mastered') || '[]'));
@@ -411,6 +484,16 @@
         const counterBadge = document.getElementById('counter-badge');
         const gridCountIndicator = document.getElementById('grid-count-indicator');
         const toastWrapper = document.getElementById('toast-wrapper');
+        const refreshDeckBtn = document.getElementById('refresh-deck-btn');
+        const adminGateBtn = document.getElementById('admin-gate-btn');
+
+        // PIN Gate Elements
+        const pinModal = document.getElementById('pin-modal');
+        const pinCard = document.getElementById('pin-card');
+        const pinInput = document.getElementById('pin-input');
+        const pinForm = document.getElementById('pin-form');
+        const pinErrorText = document.getElementById('pin-error-text');
+        const closePinModalBtn = document.getElementById('close-pin-modal-btn');
 
         // Search references
         const searchToggleBtn = document.getElementById('search-toggle-btn');
@@ -426,7 +509,6 @@
         const clearSearchActionBtn = document.getElementById('clear-search-action-btn');
 
         // Sync Modal Elements
-        const syncModalBtn = document.getElementById('sync-modal-btn');
         const syncModal = document.getElementById('sync-modal');
         const closeSyncModalBtn = document.getElementById('close-sync-modal-btn');
         const jsonInput = document.getElementById('json-input');
@@ -451,34 +533,88 @@
           }
         }
 
-        // 3. DATA LOADING
-        async function fetchDeck() {
-          showLoading(true);
+        // 2. DATA FETCHING (CACHE-BUSTED WITH PROXY FALLBACK)
+        async function fetchDeck(isManualRefresh = false) {
+          if (isManualRefresh && refreshDeckBtn) {
+            const icon = refreshDeckBtn.querySelector('svg, i');
+            if (icon) icon.classList.add('animate-spin');
+          } else {
+            showLoading(true);
+          }
           hideError();
 
-          try {
-            // Add timestamp query parameter to bypass GitHub caching when re-fetching
-            const res = await fetch(`${DATA_URL}?_t=${Date.now()}`, { cache: 'no-cache' });
-            if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to reach dataset`);
-            const data = await res.json();
+          let data = null;
 
+          // Step 1: Direct clean cache-busted fetch
+          try {
+            const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${FILE_PATH}?nocache=${Date.now()}`;
+            const res = await fetch(rawUrl);
+            if (res.ok) {
+              data = await res.json();
+            }
+          } catch (browserFetchErr) {
+            console.warn('[Fetch] Direct fetch failed, trying backend proxy:', browserFetchErr);
+          }
+
+          // Step 2: Route through backend proxy /api/deck if direct fetch is blocked
+          if (!data || !Array.isArray(data) || data.length === 0) {
+            try {
+              const proxyRes = await fetch(`/api/deck?t=${Date.now()}`);
+              if (proxyRes.ok) {
+                data = await proxyRes.json();
+              }
+            } catch (proxyErr) {
+              console.warn('[Fetch] Backend proxy fetch failed:', proxyErr);
+            }
+          }
+
+          try {
             if (!Array.isArray(data) || data.length === 0) {
-              throw new Error('Retrieved dataset is empty or corrupted');
+              throw new Error('Could not retrieve flashcard dataset from remote source or server');
             }
 
-            allCards = data.map((item, idx) => ({
+            // Standardize format
+            const freshCards = data.map((item, idx) => ({
               id: item.id || (idx + 1),
               question: item.question || item.q || 'Untitled Question',
               answer: item.answer || item.a || 'No explanation provided.'
             }));
 
+            allCards = freshCards;
+            localStorage.setItem(STORAGE_KEY + '_cached_cards', JSON.stringify(allCards));
+
             showLoading(false);
             filterAndRender();
-            showToast(`Loaded ${allCards.length} flashcards`, 'info');
+
+            if (isManualRefresh) {
+              showToast("Deck reloaded with latest questions", 'success');
+            } else {
+              showToast(`Loaded ${allCards.length} flashcards`, 'info');
+            }
           } catch (err) {
             console.error('Fetch error:', err);
             showLoading(false);
+
+            // Fallback to locally cached cards
+            const cached = localStorage.getItem(STORAGE_KEY + '_cached_cards');
+            if (cached) {
+              try {
+                const parsedCached = JSON.parse(cached);
+                if (Array.isArray(parsedCached) && parsedCached.length > 0) {
+                  allCards = parsedCached;
+                  filterAndRender();
+                  showToast(`Offline mode: showing ${allCards.length} cached cards`, 'info');
+                  return;
+                }
+              } catch (e) {}
+            }
+
             showError(err.message || 'Network error fetching questions');
+          } finally {
+            if (refreshDeckBtn) {
+              const icon = refreshDeckBtn.querySelector('svg, i');
+              if (icon) icon.classList.remove('animate-spin');
+            }
           }
         }
 
@@ -517,7 +653,7 @@
           showToast(`Running on ${allCards.length} core offline questions`, 'info');
         }
 
-        // 4. FILTERING & SEARCH PIPELINE
+        // 3. FILTERING & SEARCH PIPELINE
         function filterAndRender(preserveIndex = false) {
           const q = searchQuery.trim().toLowerCase();
 
@@ -568,14 +704,17 @@
           countMasteredEl.textContent = masteredCount;
           countBookmarkedEl.textContent = bookmarkedCount;
 
-          if (activeTab === 'reels') {
-            updateHeaderCounter(currentFeedIndex);
-          } else {
-            counterBadge.textContent = `${filteredCards.length} Cards`;
+          if (counterBadge) {
+            if (activeTab === 'reels') {
+              updateHeaderCounter(currentFeedIndex);
+            } else {
+              counterBadge.textContent = `${filteredCards.length} Cards`;
+            }
           }
         }
 
         function updateHeaderCounter(index) {
+          if (!counterBadge) return;
           if (filteredCards.length === 0) {
             counterBadge.textContent = '0 / 0';
             return;
@@ -587,105 +726,128 @@
           }
         }
 
-        // 4. VIEW 1: REELS / FEED VIEW (INSTAGRAM-STYLE SNAP SCROLL)
+        // 4. VIEW 1: REELS / FEED VIEW (FULL-HEIGHT GROUNDED REEL WITH 3 HORIZONTAL ACTIONS)
         function buildFeedDOM() {
           feedItemsList.innerHTML = '';
 
           filteredCards.forEach((item, index) => {
             const isMastered = masteredIds.has(item.id);
             const isBookmarked = bookmarkedIds.has(item.id);
+            const isSpeaking = activeAudioId === item.id;
+            
             const cardItem = document.createElement('div');
             
-            cardItem.className = 'snap-card-item h-full w-full p-3.5 flex flex-col justify-center shrink-0 relative';
-            cardItem.style.height = 'calc(100vh - 120px)';
+            // Full height card matching container
+            cardItem.className = 'reel-card-item w-full h-full relative flex flex-col justify-between overflow-hidden bg-white border-b border-slate-100';
+            cardItem.style.height = 'calc(100dvh - 125px)';
             cardItem.dataset.index = index;
             cardItem.dataset.id = item.id;
             cardItem.id = `feed-item-${index}`;
 
             cardItem.innerHTML = `
-              <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 card-shadow h-full flex flex-col justify-between relative overflow-hidden transition-all">
+              <!-- Inner Card Content Wrapper: Generous padding, structured vertical flow -->
+              <div class="h-full w-full p-6 flex flex-col justify-between relative bg-white">
                 
-                <!-- Top Section: Question pill badge -->
+                <!-- TOP SECTION: Question number badge & status -->
                 <div>
-                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                  <div class="flex items-center justify-between pb-3.5 mb-2 border-b border-slate-100">
                     <div class="flex items-center gap-2">
                       <span class="px-2.5 py-1 text-[11px] font-mono font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100/80">
                         #${String(item.id).padStart(2, '0')}
                       </span>
-                      <span class="px-2 py-0.5 text-[10px] font-mono uppercase font-semibold text-slate-400">
-                        ${index + 1} of ${filteredCards.length}
+                      <span class="px-2 py-0.5 text-[11px] font-mono font-medium text-slate-500">
+                        Question ${index + 1} of ${filteredCards.length}
                       </span>
                     </div>
 
                     <div class="flex items-center gap-1.5">
                       ${isMastered ? `
-                        <span class="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
                           Mastered
                         </span>
                       ` : ''}
                       ${isBookmarked ? `
-                        <span class="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-200">
                           Saved
                         </span>
                       ` : ''}
                     </div>
                   </div>
 
-                  <!-- Middle Section: Prominent Question text in bold (#0F172A) -->
-                  <h2 class="text-base sm:text-lg font-bold text-[#0F172A] leading-snug tracking-tight mb-4 select-text">
-                    ${escapeHtml(item.question)}
-                  </h2>
+                  <!-- CENTER: Prominent, high-contrast, bold Question text in text-slate-900 -->
+                  <div class="pt-2 select-text">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-snug tracking-tight">
+                      ${escapeHtml(item.question)}
+                    </h2>
+                  </div>
                 </div>
 
-                <!-- Lower Section: Clean tinted container for Answer (#475569) immediately visible -->
-                <div class="my-auto flex-1 flex flex-col justify-center">
-                  <div class="bg-[#F1F5F9]/80 rounded-2xl p-4 sm:p-5 border border-slate-200/70 shadow-inner">
-                    <div class="flex items-center justify-between mb-1.5">
-                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-3 h-3 text-indigo-500"></i>
-                        Verified Answer
+                <!-- LOWER SECTION: Clean light-tinted Answer card -->
+                <div class="my-auto flex-1 flex flex-col justify-center py-3 select-text">
+                  <div class="bg-indigo-50/70 border border-indigo-100/90 rounded-2xl p-4 sm:p-5 card-shadow relative">
+                    <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-indigo-100/80">
+                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        Verified Explanation
                       </span>
-                      <button class="read-speech-btn btn-press text-[10px] text-slate-500 hover:text-indigo-600 font-medium flex items-center gap-1" data-id="${item.id}">
-                        <i data-lucide="volume-2" class="w-3 h-3"></i>
-                        <span>Listen</span>
-                      </button>
+                      ${isSpeaking ? `
+                        <div class="flex items-center gap-0.5 text-indigo-600 text-[10px] font-mono font-bold">
+                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-1"></span>
+                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-2"></span>
+                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-3"></span>
+                          <span class="ml-1 text-[9px] uppercase">Playing</span>
+                        </div>
+                      ` : ''}
                     </div>
-                    <p class="text-xs sm:text-sm text-[#475569] leading-relaxed font-normal select-text">
+
+                    <p class="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
                       ${escapeHtml(item.answer)}
                     </p>
                   </div>
                 </div>
 
-                <!-- Action Icons: Bookmark, Mark Mastered, Copy Text -->
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-1.5">
-                    <!-- Bookmark Button -->
-                    <button 
-                      class="toggle-bookmark-btn btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${isBookmarked ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
-                      data-id="${item.id}"
-                    >
-                      <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-                      <span>${isBookmarked ? 'Saved' : 'Bookmark'}</span>
-                    </button>
-
-                    <!-- Mark Mastered Button -->
-                    <button 
-                      class="toggle-mastered-btn btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${isMastered ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
-                      data-id="${item.id}"
-                    >
-                      <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                      <span>${isMastered ? 'Mastered' : 'Master'}</span>
-                    </button>
-                  </div>
-
-                  <!-- Copy Text Button -->
+                <!-- BOTTOM ROW: 3 EQUAL-WIDTH HORIZONTAL ACTION BUTTONS (Just above grounded nav bar) -->
+                <div class="pt-2 flex items-center justify-between gap-2.5 w-full">
+                  
+                  <!-- Action 1: Save / Bookmark Button -->
                   <button 
-                    class="share-card-btn btn-press p-2 rounded-xl text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    class="toggle-bookmark-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition ${
+                      isBookmarked 
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200 shadow-sm' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }"
                     data-id="${item.id}"
-                    title="Copy Question & Answer"
                   >
-                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-current text-amber-600' : 'text-slate-500'}"></i>
+                    <span>${isBookmarked ? 'Saved' : 'Save'}</span>
                   </button>
+
+                  <!-- Action 2: Master / Check Button -->
+                  <button 
+                    class="toggle-mastered-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition ${
+                      isMastered 
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }"
+                    data-id="${item.id}"
+                  >
+                    <i data-lucide="check" class="w-4 h-4 ${isMastered ? 'text-emerald-600' : 'text-slate-500'}"></i>
+                    <span>${isMastered ? 'Mastered' : 'Master'}</span>
+                  </button>
+
+                  <!-- Action 3: Listen / Audio Button -->
+                  <button 
+                    class="read-speech-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition ${
+                      isSpeaking 
+                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-sm' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }"
+                    data-id="${item.id}"
+                  >
+                    <i data-lucide="volume-2" class="w-4 h-4 ${isSpeaking ? 'text-indigo-600' : 'text-slate-500'}"></i>
+                    <span>${isSpeaking ? 'Pause' : 'Listen'}</span>
+                  </button>
+
                 </div>
 
               </div>
@@ -696,7 +858,7 @@
           });
         }
 
-        // 5. VIEW 2: GRID VIEW (2-COLUMN QUICK JUMP)
+        // 5. VIEW 2: GRID VIEW (POLISHED & OPTIMIZED 2-COLUMN MATRIX)
         function buildGridDOM() {
           gridCardsList.innerHTML = '';
 
@@ -705,37 +867,34 @@
             const isBookmarked = bookmarkedIds.has(item.id);
             const gridCard = document.createElement('div');
 
-            gridCard.className = 'grid-card-item btn-press bg-white rounded-2xl p-3 border border-slate-100 card-shadow flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition-all relative min-h-[125px]';
+            // Compact card surface with active:scale-[0.98] feedback
+            gridCard.className = 'grid-card-item bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 card-shadow flex flex-col justify-between cursor-pointer hover:border-indigo-200 hover:shadow-md active:scale-[0.98] transition-all relative min-h-[105px]';
             gridCard.dataset.index = index;
             gridCard.dataset.id = item.id;
 
-            let statusDotClass = 'bg-slate-300';
-            if (isMastered) statusDotClass = 'bg-emerald-500 ring-2 ring-emerald-100';
-            else if (isBookmarked) statusDotClass = 'bg-amber-500 ring-2 ring-amber-100';
+            // Dynamic status dot: Green if Mastered, Amber if Bookmarked, Muted grey if Unread
+            let statusDotClass = 'bg-slate-200';
+            if (isMastered) {
+              statusDotClass = 'bg-emerald-500';
+            } else if (isBookmarked) {
+              statusDotClass = 'bg-amber-500';
+            }
 
             gridCard.innerHTML = `
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-slate-100 text-slate-700">
-                    #${String(item.id).padStart(2, '0')}
-                  </span>
-                  <span class="w-2 h-2 rounded-full ${statusDotClass}"></span>
-                </div>
-
-                <!-- 2-3 line preview -->
-                <h4 class="text-xs font-bold text-[#0F172A] leading-snug line-clamp-3 mb-2">
-                  ${escapeHtml(item.question)}
-                </h4>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] px-2 py-0.5 rounded-md font-medium text-slate-600 bg-slate-100 font-mono">
+                  #${String(item.id).padStart(2, '0')}
+                </span>
+                <span class="w-2 h-2 rounded-full shrink-0 ${statusDotClass}"></span>
               </div>
 
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-medium text-slate-400">
-                <span>Open Reel</span>
-                <i data-lucide="chevron-right" class="w-3 h-3 text-indigo-500"></i>
-              </div>
+              <!-- Question typography: text-[13px] font-semibold text-slate-800 leading-snug line-clamp-3 -->
+              <h4 class="text-[13px] font-semibold text-slate-800 leading-snug line-clamp-3">
+                ${escapeHtml(item.question)}
+              </h4>
             `;
 
-            // Interaction Rule: When a user taps any grid card:
-            // Immediately switch active tab to "Feed" and instantly jump directly without smooth scroll delay
+            // Instant Direct Opening: No scroll animation delay!
             gridCard.addEventListener('click', () => {
               openCardInFeedInstantly(index);
             });
@@ -744,7 +903,7 @@
           });
         }
 
-        // Instant Direct Jump to Card
+        // Instant Direct Jump to Card (Zero Scroll Animation Delay)
         function openCardInFeedInstantly(index) {
           if (index < 0 || index >= filteredCards.length) return;
 
@@ -826,7 +985,36 @@
           threshold: 0.5
         });
 
-        // Actions: Bookmark, Master, Copy, TTS
+        // Keyboard Navigation (Arrow Up / Down reels jumping)
+        window.addEventListener('keydown', (e) => {
+          if (['input', 'textarea'].includes(document.activeElement?.tagName?.toLowerCase())) return;
+
+          if (activeTab === 'reels' && filteredCards.length > 0) {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+              e.preventDefault();
+              if (currentFeedIndex < filteredCards.length - 1) {
+                jumpToFeedIndex(currentFeedIndex + 1);
+              }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+              e.preventDefault();
+              if (currentFeedIndex > 0) {
+                jumpToFeedIndex(currentFeedIndex - 1);
+              }
+            } else if (e.key === 'm' || e.key === 'M') {
+              const card = filteredCards[currentFeedIndex];
+              if (card) toggleMastered(card.id);
+            } else if (e.key === 's' || e.key === 'S' || e.key === 'b' || e.key === 'B') {
+              const card = filteredCards[currentFeedIndex];
+              if (card) toggleBookmark(card.id);
+            } else if (e.key === ' ') {
+              e.preventDefault();
+              const card = filteredCards[currentFeedIndex];
+              if (card) readAloud(card.id);
+            }
+          }
+        });
+
+        // 6. CARD ACTIONS: MASTER, BOOKMARK, AUDIO TTS
         function toggleMastered(id) {
           const numId = Number(id);
           if (masteredIds.has(numId)) {
@@ -854,49 +1042,52 @@
           filterAndRender(true);
         }
 
-        function shareCard(id) {
-          const numId = Number(id);
-          const item = allCards.find(c => c.id === numId);
-          if (!item) return;
-
-          const text = `Q#${item.id}: ${item.question}\n\nAnswer: ${item.answer}\n— EEE Flashcards`;
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-              showToast(`Card #${numId} copied to clipboard!`, 'success');
-            }).catch(() => {
-              showToast('Copied to clipboard', 'info');
-            });
-          }
-        }
-
         function readAloud(id) {
           if (!('speechSynthesis' in window)) {
             showToast('Text-to-speech unsupported on this browser', 'info');
             return;
           }
-          if (window.speechSynthesis.speaking) {
+
+          const numId = Number(id);
+          if (activeAudioId === numId && window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
+            activeAudioId = null;
+            filterAndRender(true);
             showToast('Audio paused', 'info');
             return;
           }
 
-          const numId = Number(id);
+          window.speechSynthesis.cancel();
           const item = allCards.find(c => c.id === numId);
           if (!item) return;
 
+          activeAudioId = numId;
           const utter = new SpeechSynthesisUtterance(`${item.question}. ${item.answer}`);
           utter.rate = 1.0;
+          utter.pitch = 1.0;
           utter.lang = 'en-US';
-          utter.onstart = () => showToast('Playing audio...', 'info');
+          
+          utter.onend = () => {
+            activeAudioId = null;
+            filterAndRender(true);
+          };
+          utter.onerror = () => {
+            activeAudioId = null;
+            filterAndRender(true);
+          };
+
+          showToast(`Reading Q#${numId}...`, 'info');
           window.speechSynthesis.speak(utter);
+          filterAndRender(true);
         }
 
         function saveStorage() {
           localStorage.setItem(STORAGE_KEY + '_mastered', JSON.stringify(Array.from(masteredIds)));
           localStorage.setItem(STORAGE_KEY + '_bookmarked', JSON.stringify(Array.from(bookmarkedIds)));
+          localStorage.setItem(STORAGE_KEY + '_cached_cards', JSON.stringify(allCards));
         }
 
-        // Event delegation for card action buttons
+        // Event delegation for card action buttons in Reels
         feedItemsList.addEventListener('click', (e) => {
           const mastBtn = e.target.closest('.toggle-mastered-btn');
           if (mastBtn) {
@@ -907,12 +1098,6 @@
           const bookBtn = e.target.closest('.toggle-bookmark-btn');
           if (bookBtn) {
             toggleBookmark(bookBtn.dataset.id);
-            return;
-          }
-
-          const shareBtn = e.target.closest('.share-card-btn');
-          if (shareBtn) {
-            shareCard(shareBtn.dataset.id);
             return;
           }
 
@@ -948,15 +1133,15 @@
           activeFilter = type;
           savedGridScrollTop = 0;
           [filterAllBtn, filterMasteredBtn, filterBookmarkedBtn].forEach(btn => {
-            btn.className = 'filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200';
+            btn.className = 'filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-sans';
           });
 
           if (type === 'all') {
-            filterAllBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white';
+            filterAllBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white font-sans';
           } else if (type === 'mastered') {
-            filterMasteredBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-600 text-white';
+            filterMasteredBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-600 text-white font-sans';
           } else if (type === 'bookmarked') {
-            filterBookmarkedBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-500 text-white';
+            filterBookmarkedBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-500 text-white font-sans';
           }
 
           filterAndRender();
@@ -972,10 +1157,87 @@
           setFilter('all');
         });
 
-        document.getElementById('retry-btn').addEventListener('click', fetchDeck);
+        if (refreshDeckBtn) {
+          refreshDeckBtn.addEventListener('click', () => fetchDeck(true));
+        }
+
+        document.getElementById('retry-btn').addEventListener('click', () => fetchDeck(false));
         document.getElementById('offline-btn').addEventListener('click', loadOfflineDeck);
 
-        // 6. ADMIN / SYNC MODAL (DIRECT GITHUB REST API COMMIT ENGINE)
+        // 7. ADMIN PIN GATE & GITHUB SYNC ENGINE (PIN: 3605)
+        function openPinGate() {
+          if (pinErrorText) pinErrorText.classList.add('hidden');
+          if (pinCard) pinCard.classList.remove('animate-shake');
+          if (pinInput) {
+            pinInput.value = '';
+            pinInput.classList.remove('border-rose-400');
+          }
+          if (pinModal) pinModal.classList.remove('hidden');
+          renderIcons();
+          setTimeout(() => {
+            if (pinInput) pinInput.focus();
+          }, 120);
+        }
+
+        function closePinGate() {
+          if (pinModal) pinModal.classList.add('hidden');
+          if (window.location.hash.includes('admin')) {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+          }
+        }
+
+        function verifyPin(e) {
+          if (e) e.preventDefault();
+          const enteredPin = pinInput ? pinInput.value.trim() : '';
+
+          if (enteredPin === TARGET_PIN) {
+            closePinGate();
+            showToast("Admin access verified", "success");
+            openSyncModal();
+          } else {
+            if (pinCard) {
+              pinCard.classList.remove('animate-shake');
+              void pinCard.offsetWidth; // Force CSS reflow to re-trigger shake
+              pinCard.classList.add('animate-shake');
+            }
+            if (pinErrorText) pinErrorText.classList.remove('hidden');
+            if (pinInput) {
+              pinInput.classList.add('border-rose-400');
+              pinInput.value = '';
+              pinInput.focus();
+            }
+            renderIcons();
+          }
+        }
+
+        if (adminGateBtn) {
+          adminGateBtn.addEventListener('click', openPinGate);
+        }
+
+        if (closePinModalBtn) {
+          closePinModalBtn.addEventListener('click', closePinGate);
+        }
+
+        if (pinModal) {
+          pinModal.addEventListener('click', (e) => {
+            if (e.target === pinModal) closePinGate();
+          });
+        }
+
+        if (pinForm) {
+          pinForm.addEventListener('submit', verifyPin);
+        }
+
+        if (pinInput) {
+          pinInput.addEventListener('input', () => {
+            if (pinErrorText) pinErrorText.classList.add('hidden');
+            pinInput.classList.remove('border-rose-400');
+            if (pinInput.value.length === 4) {
+              verifyPin();
+            }
+          });
+        }
+
         function openSyncModal() {
           syncModal.classList.remove('hidden');
           commitProgressBox.classList.add('hidden');
@@ -990,7 +1252,6 @@
           }
         }
 
-        syncModalBtn.addEventListener('click', openSyncModal);
         closeSyncModalBtn.addEventListener('click', closeSyncModal);
         syncModal.addEventListener('click', (e) => {
           if (e.target === syncModal) closeSyncModal();
@@ -1044,7 +1305,7 @@
 
         jsonInput.addEventListener('input', validateJsonInput);
 
-        // Direct GitHub REST API Commit Engine
+        // Backend Proxy Sync Engine
         pushGithubBtn.addEventListener('click', async () => {
           if (!validateJsonInput()) return;
 
@@ -1057,68 +1318,38 @@
 
           pushGithubBtn.disabled = true;
           commitProgressBox.classList.remove('hidden');
-          commitProgressText.textContent = "Step 1/3: Fetching current file SHA...";
+          commitProgressText.textContent = "Connecting to backend proxy...";
 
           try {
-            const token = getPat();
-            const headers = {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/vnd.github+json',
-              'X-GitHub-Api-Version': '2022-11-28'
-            };
+            commitProgressText.textContent = "Merging & committing to GitHub via backend proxy...";
 
-            // Step B: Call GET to fetch current file's latest sha
-            const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-            const getRes = await fetch(getUrl, {
-              headers,
-              cache: 'no-cache'
-            });
-
-            if (!getRes.ok) {
-              const errData = await getRes.json().catch(() => ({}));
-              throw new Error(`GitHub GET failed (${getRes.status}): ${errData.message || 'Check repository permissions'}`);
-            }
-
-            const fileData = await getRes.json();
-            const currentSha = fileData.sha;
-
-            commitProgressText.textContent = "Step 2/3: Encoding UTF-8 payload...";
-
-            // Step C: Base64 encode JSON cleanly handling UTF-8 characters
-            const formattedJson = JSON.stringify(parsedCards, null, 2);
-            const base64Content = btoa(unescape(encodeURIComponent(formattedJson)));
-
-            commitProgressText.textContent = "Step 3/3: Committing update to GitHub...";
-
-            // Step D: Call PUT with commit payload
-            const putRes = await fetch(getUrl, {
-              method: 'PUT',
+            const res = await fetch('/api/sync-github', {
+              method: 'POST',
               headers: {
-                ...headers,
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({
-                message: `Update daily flashcards deck (${parsedCards.length} cards)`,
-                content: base64Content,
-                sha: currentSha,
-                branch: 'main'
-              })
+              body: JSON.stringify({ data: parsedCards })
             });
 
-            if (!putRes.ok) {
-              const putErr = await putRes.json().catch(() => ({}));
-              throw new Error(`GitHub Commit failed (${putRes.status}): ${putErr.message || 'Check branch permissions'}`);
+            const result = await res.json().catch(() => ({}));
+
+            if (!res.ok || !result.success) {
+              throw new Error(result.error || `Sync failed with HTTP ${res.status}`);
             }
 
-            // Success Handling
-            allCards = parsedCards;
+            if (Array.isArray(result.mergedData) && result.mergedData.length > 0) {
+              allCards = result.mergedData;
+            } else {
+              allCards = [...allCards, ...parsedCards].map((c, i) => ({ ...c, id: i + 1 }));
+            }
+            localStorage.setItem(STORAGE_KEY + '_cached_cards', JSON.stringify(allCards));
             filterAndRender();
             closeSyncModal();
-            showToast(`Successfully pushed ${parsedCards.length} cards to GitHub!`, 'success');
+            showToast(`Merged ${result.addedCount || parsedCards.length} new cards! Total: ${allCards.length}`, 'success');
 
           } catch (error) {
-            console.error('Commit error:', error);
-            alert(`GitHub Commit Error:\n${error.message}`);
+            console.error('Sync error:', error);
+            alert(`GitHub Sync Error:\n${error.message}`);
             commitProgressText.textContent = `Error: ${error.message}`;
           } finally {
             pushGithubBtn.disabled = false;
@@ -1126,12 +1357,12 @@
           }
         });
 
-        // URL /admin trigger compatibility
+        // URL /admin route detection for instant PIN unlock
         function checkAdminRoute() {
           const hash = window.location.hash;
           const path = window.location.pathname;
           if (hash === '#/admin' || hash === '#admin' || path.endsWith('/admin')) {
-            openSyncModal();
+            openPinGate();
           }
         }
 
