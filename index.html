@@ -97,11 +97,11 @@
       }
 
       /* Safe area padding for mobile devices */
-      .safe-top {
-        padding-top: env(safe-area-inset-top, 0px);
+      .safe-top-header {
+        padding-top: max(env(safe-area-inset-top, 0px), 16px);
       }
-      .safe-bottom {
-        padding-bottom: env(safe-area-inset-bottom, 0px);
+      .safe-bottom-nav {
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
       }
 
       /* Button press feedback */
@@ -110,9 +110,9 @@
         transition: transform 0.08s ease;
       }
 
-      /* Subtle shadow */
+      /* Soft realistic sky shadow */
       .card-shadow {
-        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+        box-shadow: 0 4px 20px -4px rgba(14, 165, 233, 0.08);
       }
 
       /* PIN error shake animation */
@@ -137,25 +137,25 @@
   </head>
   <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4 select-none">
 
-    <!-- DEDICATED MOBILE VIEWPORT FRAME (Clean Grounded Structure) -->
-    <div id="app-frame" class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-[#F8FAFC] sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-slate-200/80 overflow-hidden relative flex flex-col mx-auto">
+    <!-- DEDICATED MOBILE VIEWPORT FRAME (Sky Blue Gradient Canvas) -->
+    <div id="app-frame" class="w-full max-w-md h-[100dvh] sm:h-[844px] bg-gradient-to-b from-sky-50 via-cyan-50/40 to-slate-50 sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-sky-100 overflow-hidden relative flex flex-col mx-auto">
       
       <!-- STICKY TOP HEADER -->
-      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-5 py-3 safe-top flex flex-col gap-2 shrink-0">
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-sky-100 px-5 pb-3 safe-top-header flex flex-col gap-2 shrink-0">
         <div class="flex items-center justify-between">
           
-          <!-- Left: Clean Brand Presence -->
+          <!-- Left: Clean Sky Blue Brand Presence -->
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-indigo-600/30">
+            <div class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-sky-500/30">
               <i data-lucide="zap" class="w-4 h-4 text-white"></i>
             </div>
             <div>
               <div class="flex items-center gap-1.5">
                 <h1 class="text-sm font-bold tracking-tight text-slate-900">EEE Flashcards</h1>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold">DECK</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-100/80 text-sky-700 border border-sky-200/60 font-semibold">DECK</span>
               </div>
               <p class="text-[10px] text-slate-500 font-mono tracking-tight flex items-center gap-1">
-                <span id="counter-badge" class="text-indigo-600 font-semibold">Loading deck...</span>
+                <span id="counter-badge" class="text-sky-600 font-semibold">Loading deck...</span>
               </p>
             </div>
           </div>
@@ -163,17 +163,17 @@
           <!-- Right: Neatly Grouped Action Buttons -->
           <div class="flex items-center gap-2">
             <!-- Search Button -->
-            <button id="search-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Search cards">
+            <button id="search-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Search cards">
               <i data-lucide="search" class="w-3.5 h-3.5"></i>
             </button>
 
             <!-- Refresh Deck Button -->
-            <button id="refresh-deck-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Refresh deck from GitHub">
+            <button id="refresh-deck-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Refresh deck from GitHub">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
             </button>
 
-            <!-- Admin Gate Button (Lock Icon - PIN 3605) -->
-            <button id="admin-gate-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 transition" title="Admin Upload & Sync (PIN: 3605)">
+            <!-- Admin Gate Button (Lock Icon) -->
+            <button id="admin-gate-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-100 transition" title="Admin Upload & Sync">
               <i data-lucide="lock" class="w-3.5 h-3.5"></i>
             </button>
           </div>
@@ -189,7 +189,7 @@
               type="text" 
               id="search-input" 
               placeholder="Search concepts, equations, circuits..." 
-              class="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all font-sans"
+              class="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:bg-white transition-all font-sans"
             />
             <button id="search-close-btn" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
               <i data-lucide="x" class="w-3.5 h-3.5"></i>
@@ -198,7 +198,7 @@
 
           <!-- Quick Filter Pills: All / Mastered / Saved -->
           <div class="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar pb-0.5">
-            <button id="filter-all" class="filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white font-sans">
+            <button id="filter-all" class="filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-sky-500 text-white font-sans shadow-sm shadow-sky-500/20">
               All (<span id="count-all">0</span>)
             </button>
             <button id="filter-mastered" class="filter-chip shrink-0 px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-sans">
@@ -212,11 +212,11 @@
       </header>
 
       <!-- MAIN CONTENT VIEWPORT -->
-      <main class="flex-1 relative overflow-hidden flex flex-col bg-[#F8FAFC]">
+      <main class="flex-1 relative overflow-hidden flex flex-col bg-transparent">
         
         <!-- SKELETON PULSE LOADING VIEW -->
-        <div id="loading-view" class="absolute inset-0 z-20 flex flex-col justify-between p-5 bg-[#F8FAFC]">
-          <div class="bg-white rounded-3xl p-6 border border-slate-100 card-shadow h-full flex flex-col justify-between animate-pulse">
+        <div id="loading-view" class="absolute inset-0 z-20 flex flex-col justify-between p-5 bg-slate-50/80 backdrop-blur-sm">
+          <div class="bg-white/95 rounded-3xl p-6 border border-sky-100 card-shadow h-full flex flex-col justify-between animate-pulse">
             <div>
               <div class="flex items-center justify-between mb-6">
                 <div class="h-6 w-24 bg-slate-200 rounded-lg"></div>
@@ -241,15 +241,15 @@
         </div>
 
         <!-- ERROR STATE CARD -->
-        <div id="error-view" class="hidden absolute inset-0 z-20 flex items-center justify-center p-5 bg-[#F8FAFC]">
-          <div class="bg-white rounded-3xl p-6 border border-red-100 card-shadow text-center max-w-sm w-full">
+        <div id="error-view" class="hidden absolute inset-0 z-20 flex items-center justify-center p-5 bg-slate-50/90 backdrop-blur-sm">
+          <div class="bg-white/95 rounded-3xl p-6 border border-red-100 card-shadow text-center max-w-sm w-full">
             <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-500 mx-auto mb-3 flex items-center justify-center">
               <i data-lucide="alert-triangle" class="w-6 h-6"></i>
             </div>
             <h3 class="text-base font-bold text-slate-900 mb-1">Failed to Connect to Deck</h3>
             <p id="error-text" class="text-xs text-slate-500 mb-5 leading-relaxed">Could not load flashcards from GitHub repository.</p>
             <div class="flex flex-col gap-2">
-              <button id="retry-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20">
+              <button id="retry-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/20">
                 Retry Fetch
               </button>
               <button id="offline-btn" class="btn-press w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs">
@@ -267,7 +267,7 @@
             </div>
             <h4 class="text-sm font-bold text-slate-900 mb-1">No Matching Flashcards</h4>
             <p class="text-xs text-slate-500 mb-4">Try clearing your search query or reset filter pills.</p>
-            <button id="clear-search-action-btn" class="btn-press px-4 py-2 rounded-xl bg-indigo-50 text-indigo-600 font-semibold text-xs">
+            <button id="clear-search-action-btn" class="btn-press px-4 py-2 rounded-xl bg-sky-50 text-sky-700 font-semibold text-xs">
               Clear Filters
             </button>
           </div>
@@ -283,7 +283,7 @@
         <section id="grid-screen" class="hidden flex-1 w-full h-full overflow-y-auto no-scrollbar p-3.5 pb-24">
           <div class="flex items-center justify-between mb-3 px-1">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              <span class="w-2 h-2 rounded-full bg-sky-500"></span>
               <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">All Flashcards</span>
             </div>
             <span id="grid-count-indicator" class="text-[11px] font-mono text-slate-500 font-medium">0 displayed</span>
@@ -296,24 +296,24 @@
       </main>
 
       <!-- GROUNDED BOTTOM NAVIGATION BAR (Strictly glued to bottom) -->
-      <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-slate-200 z-50 py-2.5 px-6 flex justify-around items-center safe-bottom shadow-lg">
+      <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-sky-100 z-50 pt-2 px-6 flex justify-around items-center safe-bottom-nav shadow-lg">
         
         <!-- Tab 1: Feed (Snap vertical scroll) -->
-        <button id="tab-reels-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all">
+        <button id="tab-reels-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-sky-600 transition-all">
           <div class="relative">
             <i data-lucide="film" class="w-5 h-5"></i>
-            <span class="active-dot absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
+            <span class="active-dot absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-sky-500 rounded-full"></span>
           </div>
           <span class="text-[10px] font-bold tracking-tight">Reels</span>
         </button>
 
-        <div class="h-6 w-px bg-slate-200"></div>
+        <div class="h-6 w-px bg-sky-100"></div>
 
         <!-- Tab 2: Grid (All cards overview) -->
         <button id="tab-grid-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all">
           <div class="relative">
             <i data-lucide="layout-grid" class="w-5 h-5"></i>
-            <span class="active-dot hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
+            <span class="active-dot hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-sky-500 rounded-full"></span>
           </div>
           <span class="text-[10px] font-semibold tracking-tight">Grid</span>
         </button>
@@ -323,21 +323,21 @@
       <!-- FLOATING TOAST FEEDBACK -->
       <div id="toast-wrapper" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-full max-w-xs px-4 flex flex-col items-center gap-1.5"></div>
 
-      <!-- PIN-PROTECTED ADMIN GATE MODAL (PIN: 3605) -->
+      <!-- PIN-PROTECTED ADMIN GATE MODAL -->
       <div id="pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-        <div id="pin-card" class="bg-white rounded-3xl w-full max-w-xs p-6 card-shadow border border-slate-100 flex flex-col items-center text-center relative transition-transform">
+        <div id="pin-card" class="bg-white rounded-3xl w-full max-w-xs p-6 card-shadow border border-sky-100 flex flex-col items-center text-center relative transition-transform">
           
           <button id="close-pin-modal-btn" class="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
 
           <!-- Lock Icon Shield -->
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3.5 shadow-sm">
+          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-3.5 shadow-sm">
             <i data-lucide="lock" class="w-6 h-6"></i>
           </div>
 
           <h3 class="text-base font-bold text-slate-900 mb-1">Admin Access Required</h3>
-          <p class="text-xs text-slate-500 mb-5">Enter security PIN (3605) to unlock the GitHub upload station.</p>
+          <p class="text-xs text-slate-500 mb-5 leading-relaxed">Enter laptop's password to unlock the GitHub upload station.</p>
 
           <form id="pin-form" class="w-full space-y-4">
             <div class="relative">
@@ -349,7 +349,7 @@
                 pattern="[0-9]*" 
                 placeholder="••••" 
                 autocomplete="off" 
-                class="w-full text-center text-2xl tracking-[0.5em] font-mono py-2.5 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-100 transition"
+                class="w-full text-center text-2xl tracking-[0.5em] font-mono py-2.5 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-2 focus:ring-sky-100 transition"
               />
             </div>
 
@@ -361,7 +361,7 @@
 
             <button 
               type="submit" 
-              class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-1.5"
+              class="btn-press w-full py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/20 transition flex items-center justify-center gap-1.5"
             >
               <i data-lucide="key" class="w-3.5 h-3.5"></i>
               <span>Verify PIN</span>
@@ -373,19 +373,19 @@
 
       <!-- ADMIN / SYNC MODAL (DIRECT GITHUB REST API ENGINE VIA BACKEND PROXY) -->
       <div id="sync-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 sm:p-6 max-h-[90vh] overflow-y-auto card-shadow border border-slate-100 flex flex-col">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 sm:p-6 max-h-[90vh] overflow-y-auto card-shadow border border-sky-100 flex flex-col">
           
           <!-- Modal Header -->
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-sky-100">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <svg class="w-4 h-4 text-indigo-600 fill-current" viewBox="0 0 24 24">
+              <div class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
+                <svg class="w-4 h-4 text-sky-600 fill-current" viewBox="0 0 24 24">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
                 </svg>
               </div>
               <div>
                 <h3 class="text-sm font-bold text-slate-900">GitHub Commit Engine</h3>
-                <span class="text-[10px] font-mono text-indigo-600">Shivam97259/EEE/eee.json</span>
+                <span class="text-[10px] font-mono text-sky-600">Shivam97259/EEE/eee.json</span>
               </div>
             </div>
             <button id="close-sync-modal-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
@@ -404,7 +404,7 @@
                 id="json-input" 
                 rows="8" 
                 placeholder='[&#10;  {&#10;    "id": 1,&#10;    "question": "Why is power transmitted at high voltage?",&#10;    "answer": "To reduce current and minimize I^2R copper losses."&#10;  }&#10;]' 
-                class="w-full p-3 font-mono text-[11px] leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white resize-y"
+                class="w-full p-3 font-mono text-[11px] leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white resize-y"
               ></textarea>
             </div>
 
@@ -415,7 +415,7 @@
                 <span>Enter JSON array</span>
               </div>
               
-              <button id="load-current-btn" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+              <button id="load-current-btn" class="text-[11px] font-semibold text-sky-600 hover:text-sky-800 transition-colors">
                 Load Current Deck
               </button>
             </div>
@@ -423,7 +423,7 @@
             <!-- Primary Push & Update Button -->
             <button 
               id="push-github-btn" 
-              class="btn-press w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn-press w-full py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
               <span id="push-btn-label">Merge & Push to GitHub</span>
@@ -431,8 +431,8 @@
 
             <!-- Status Banner -->
             <div id="commit-progress-box" class="hidden p-3 rounded-xl text-xs bg-slate-50 border border-slate-200 space-y-1">
-              <div class="flex items-center gap-2 text-indigo-600 font-semibold">
-                <div class="w-3 h-3 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+              <div class="flex items-center gap-2 text-sky-600 font-semibold">
+                <div class="w-3 h-3 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
                 <span id="commit-progress-text">Connecting to GitHub...</span>
               </div>
             </div>
@@ -726,6 +726,44 @@
           }
         }
 
+        // Helper to update specific speech button UI without rebuilding DOM
+        function updateAudioButtonUI(cardId, isPlaying) {
+          if (!cardId) return;
+          const cardItem = feedItemsList.querySelector(`[data-id="${cardId}"]`);
+          if (!cardItem) return;
+
+          const btn = cardItem.querySelector('.read-speech-btn');
+          if (btn) {
+            if (isPlaying) {
+              btn.className = 'read-speech-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-sky-100 text-sky-700 border border-sky-300 shadow-sm';
+              btn.innerHTML = `<i data-lucide="square" class="w-4 h-4 fill-current text-sky-600"></i><span>Stop</span>`;
+            } else {
+              btn.className = 'read-speech-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700';
+              btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-slate-500"></i><span>Listen</span>`;
+            }
+          }
+
+          const wave = cardItem.querySelector('.audio-wave-indicator');
+          if (wave) {
+            wave.classList.toggle('hidden', !isPlaying);
+          }
+          renderIcons();
+        }
+
+        // Global voice readout killer
+        function stopAudio(resetUI = true) {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+          if (activeAudioId !== null) {
+            const prevId = activeAudioId;
+            activeAudioId = null;
+            if (resetUI) {
+              updateAudioButtonUI(prevId, false);
+            }
+          }
+        }
+
         // 4. VIEW 1: REELS / FEED VIEW (FULL-HEIGHT GROUNDED REEL WITH 3 HORIZONTAL ACTIONS)
         function buildFeedDOM() {
           feedItemsList.innerHTML = '';
@@ -737,8 +775,8 @@
             
             const cardItem = document.createElement('div');
             
-            // Full height card matching container
-            cardItem.className = 'reel-card-item w-full h-full relative flex flex-col justify-between overflow-hidden bg-white border-b border-slate-100';
+            // Full height card matching container with elevated surface and subtle border
+            cardItem.className = 'reel-card-item w-full h-full relative flex flex-col justify-between overflow-hidden bg-white/95 border-b border-sky-100';
             cardItem.style.height = 'calc(100dvh - 125px)';
             cardItem.dataset.index = index;
             cardItem.dataset.id = item.id;
@@ -746,13 +784,13 @@
 
             cardItem.innerHTML = `
               <!-- Inner Card Content Wrapper: Generous padding, structured vertical flow -->
-              <div class="h-full w-full p-6 flex flex-col justify-between relative bg-white">
+              <div class="h-full w-full p-6 flex flex-col justify-between relative bg-transparent">
                 
                 <!-- TOP SECTION: Question number badge & status -->
                 <div>
-                  <div class="flex items-center justify-between pb-3.5 mb-2 border-b border-slate-100">
+                  <div class="flex items-center justify-between pb-3.5 mb-2 border-b border-sky-100/70">
                     <div class="flex items-center gap-2">
-                      <span class="px-2.5 py-1 text-[11px] font-mono font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100/80">
+                      <span class="px-2.5 py-1 text-[11px] font-mono font-semibold rounded-lg bg-sky-100/80 text-sky-700 border border-sky-200/60">
                         #${String(item.id).padStart(2, '0')}
                       </span>
                       <span class="px-2 py-0.5 text-[11px] font-mono font-medium text-slate-500">
@@ -782,22 +820,20 @@
                   </div>
                 </div>
 
-                <!-- LOWER SECTION: Clean light-tinted Answer card -->
+                <!-- LOWER SECTION: Soft-tinted Answer card (bg-sky-50/70 border border-sky-100 text-slate-800) -->
                 <div class="my-auto flex-1 flex flex-col justify-center py-3 select-text">
-                  <div class="bg-indigo-50/70 border border-indigo-100/90 rounded-2xl p-4 sm:p-5 card-shadow relative">
-                    <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-indigo-100/80">
-                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
-                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-indigo-600"></i>
+                  <div class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative">
+                    <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-sky-100">
+                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i>
                         Verified Explanation
                       </span>
-                      ${isSpeaking ? `
-                        <div class="flex items-center gap-0.5 text-indigo-600 text-[10px] font-mono font-bold">
-                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-1"></span>
-                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-2"></span>
-                          <span class="w-1 bg-indigo-600 rounded-full audio-bar-3"></span>
-                          <span class="ml-1 text-[9px] uppercase">Playing</span>
-                        </div>
-                      ` : ''}
+                      <div class="audio-wave-indicator ${isSpeaking ? '' : 'hidden'} flex items-center gap-0.5 text-sky-600 text-[10px] font-mono font-bold">
+                        <span class="w-1 bg-sky-500 rounded-full audio-bar-1"></span>
+                        <span class="w-1 bg-sky-500 rounded-full audio-bar-2"></span>
+                        <span class="w-1 bg-sky-500 rounded-full audio-bar-3"></span>
+                        <span class="ml-1 text-[9px] uppercase">Playing</span>
+                      </div>
                     </div>
 
                     <p class="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
@@ -835,17 +871,17 @@
                     <span>${isMastered ? 'Mastered' : 'Master'}</span>
                   </button>
 
-                  <!-- Action 3: Listen / Audio Button -->
+                  <!-- Action 3: Listen / Audio Button with toggle stop -->
                   <button 
                     class="read-speech-btn btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition ${
                       isSpeaking 
-                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-sm' 
+                        ? 'bg-sky-100 text-sky-700 border border-sky-300 shadow-sm' 
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }"
                     data-id="${item.id}"
                   >
-                    <i data-lucide="volume-2" class="w-4 h-4 ${isSpeaking ? 'text-indigo-600' : 'text-slate-500'}"></i>
-                    <span>${isSpeaking ? 'Pause' : 'Listen'}</span>
+                    <i data-lucide="${isSpeaking ? 'square' : 'volume-2'}" class="w-4 h-4 ${isSpeaking ? 'fill-current text-sky-600' : 'text-slate-500'}"></i>
+                    <span>${isSpeaking ? 'Stop' : 'Listen'}</span>
                   </button>
 
                 </div>
@@ -867,8 +903,8 @@
             const isBookmarked = bookmarkedIds.has(item.id);
             const gridCard = document.createElement('div');
 
-            // Compact card surface with active:scale-[0.98] feedback
-            gridCard.className = 'grid-card-item bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 card-shadow flex flex-col justify-between cursor-pointer hover:border-indigo-200 hover:shadow-md active:scale-[0.98] transition-all relative min-h-[105px]';
+            // Compact card surface with elevated bg-white/95, subtle border and soft realistic shadow
+            gridCard.className = 'grid-card-item bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 border border-sky-100 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] flex flex-col justify-between cursor-pointer hover:border-sky-300 hover:shadow-md active:scale-[0.98] transition-all relative min-h-[105px] group';
             gridCard.dataset.index = index;
             gridCard.dataset.id = item.id;
 
@@ -882,14 +918,14 @@
 
             gridCard.innerHTML = `
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] px-2 py-0.5 rounded-md font-medium text-slate-600 bg-slate-100 font-mono">
+                <span class="text-[11px] px-2 py-0.5 rounded-md font-medium text-sky-700 bg-sky-50 border border-sky-100 font-mono">
                   #${String(item.id).padStart(2, '0')}
                 </span>
                 <span class="w-2 h-2 rounded-full shrink-0 ${statusDotClass}"></span>
               </div>
 
               <!-- Question typography: text-[13px] font-semibold text-slate-800 leading-snug line-clamp-3 -->
-              <h4 class="text-[13px] font-semibold text-slate-800 leading-snug line-clamp-3">
+              <h4 class="text-[13px] font-semibold text-slate-800 leading-snug line-clamp-3 group-hover:text-sky-600 transition-colors">
                 ${escapeHtml(item.question)}
               </h4>
             `;
@@ -907,6 +943,9 @@
         function openCardInFeedInstantly(index) {
           if (index < 0 || index >= filteredCards.length) return;
 
+          // Kill any running speech immediately
+          stopAudio(true);
+
           savedGridScrollTop = gridScreen.scrollTop;
           currentFeedIndex = index;
           activeTab = 'reels';
@@ -914,7 +953,7 @@
           gridScreen.classList.add('hidden');
           feedScreen.classList.remove('hidden');
 
-          tabReelsBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all';
+          tabReelsBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-sky-600 transition-all';
           tabReelsBtn.querySelector('.active-dot').classList.remove('hidden');
 
           tabGridBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all';
@@ -934,6 +973,9 @@
 
         function jumpToFeedIndex(index) {
           if (index < 0 || index >= filteredCards.length) return;
+          if (currentFeedIndex !== index) {
+            stopAudio(true);
+          }
           currentFeedIndex = index;
           const targetCard = feedItemsList.children[index];
           if (targetCard) {
@@ -948,12 +990,16 @@
         // View Toggling
         function openGridView() {
           if (activeTab === 'grid') return;
+
+          // Kill any speech readout immediately
+          stopAudio(true);
+
           activeTab = 'grid';
 
           feedScreen.classList.add('hidden');
           gridScreen.classList.remove('hidden');
 
-          tabGridBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-indigo-600 transition-all';
+          tabGridBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-sky-600 transition-all';
           tabGridBtn.querySelector('.active-dot').classList.remove('hidden');
 
           tabReelsBtn.className = 'nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 transition-all';
@@ -967,13 +1013,17 @@
         tabReelsBtn.addEventListener('click', () => openCardInFeedInstantly(currentFeedIndex));
         tabGridBtn.addEventListener('click', openGridView);
 
-        // Snap scroll observer
+        // Snap scroll observer: auto-cancel speech on card change
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
               const idx = parseInt(entry.target.dataset.index, 10);
               if (!isNaN(idx)) {
-                currentFeedIndex = idx;
+                if (currentFeedIndex !== idx) {
+                  // Active card changed: cancel voice readout immediately!
+                  stopAudio(true);
+                  currentFeedIndex = idx;
+                }
                 if (activeTab === 'reels') {
                   updateHeaderCounter(idx);
                 }
@@ -984,6 +1034,23 @@
           root: feedScreen,
           threshold: 0.5
         });
+
+        // Scroll settle fallback: cancel speech if active card position changed
+        let scrollSettleTimer;
+        feedScreen.addEventListener('scroll', () => {
+          clearTimeout(scrollSettleTimer);
+          scrollSettleTimer = setTimeout(() => {
+            const cardHeight = feedScreen.clientHeight;
+            if (cardHeight > 0) {
+              const estimatedIdx = Math.round(feedScreen.scrollTop / cardHeight);
+              if (estimatedIdx !== currentFeedIndex && estimatedIdx >= 0 && estimatedIdx < filteredCards.length) {
+                stopAudio(true);
+                currentFeedIndex = estimatedIdx;
+                updateHeaderCounter(estimatedIdx);
+              }
+            }
+          }, 80);
+        }, { passive: true });
 
         // Keyboard Navigation (Arrow Up / Down reels jumping)
         window.addEventListener('keydown', (e) => {
@@ -1049,36 +1116,43 @@
           }
 
           const numId = Number(id);
-          if (activeAudioId === numId && window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            activeAudioId = null;
-            filterAndRender(true);
-            showToast('Audio paused', 'info');
+
+          // If user taps Listen while already playing on this card: clean toggle OFF
+          if (activeAudioId === numId && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+            stopAudio(true);
+            showToast('Audio stopped', 'info');
             return;
           }
 
-          window.speechSynthesis.cancel();
+          // If playing another card, stop it cleanly first
+          stopAudio(true);
+
           const item = allCards.find(c => c.id === numId);
           if (!item) return;
 
           activeAudioId = numId;
+          updateAudioButtonUI(numId, true);
+
           const utter = new SpeechSynthesisUtterance(`${item.question}. ${item.answer}`);
           utter.rate = 1.0;
           utter.pitch = 1.0;
           utter.lang = 'en-US';
           
           utter.onend = () => {
-            activeAudioId = null;
-            filterAndRender(true);
+            if (activeAudioId === numId) {
+              activeAudioId = null;
+              updateAudioButtonUI(numId, false);
+            }
           };
           utter.onerror = () => {
-            activeAudioId = null;
-            filterAndRender(true);
+            if (activeAudioId === numId) {
+              activeAudioId = null;
+              updateAudioButtonUI(numId, false);
+            }
           };
 
           showToast(`Reading Q#${numId}...`, 'info');
           window.speechSynthesis.speak(utter);
-          filterAndRender(true);
         }
 
         function saveStorage() {
@@ -1137,7 +1211,7 @@
           });
 
           if (type === 'all') {
-            filterAllBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-600 text-white font-sans';
+            filterAllBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-sky-500 text-white font-sans shadow-sm shadow-sky-500/20';
           } else if (type === 'mastered') {
             filterMasteredBtn.className = 'filter-chip active shrink-0 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-600 text-white font-sans';
           } else if (type === 'bookmarked') {
