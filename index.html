@@ -162,6 +162,11 @@
 
           <!-- Right: Neatly Grouped Action Buttons -->
           <div class="flex items-center gap-2">
+            <!-- Mode Toggle Button (Mobile / Desktop) -->
+            <button id="mode-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Toggle Desktop/Mobile mode">
+              <i id="mode-toggle-icon" data-lucide="monitor" class="w-3.5 h-3.5"></i>
+            </button>
+
             <!-- Search Button -->
             <button id="search-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Search cards">
               <i data-lucide="search" class="w-3.5 h-3.5"></i>
@@ -293,10 +298,127 @@
           <div id="grid-cards-list" class="grid grid-cols-2 gap-2.5"></div>
         </section>
 
+        <!-- VIEW 3: DESKTOP DASHBOARD (2-COLUMN DASHBOARD LAYOUT) -->
+        <section id="desktop-dashboard" class="hidden flex-1 w-full h-full overflow-hidden flex gap-5 py-2">
+          
+          <!-- Left (60%): Active flashcard viewer with large text, answer box, and [Save, Master, Listen] actions -->
+          <div class="w-[60%] h-full flex flex-col justify-between bg-white/95 backdrop-blur-md rounded-3xl border border-sky-100 card-shadow p-6 sm:p-7 overflow-y-auto no-scrollbar relative">
+            
+            <!-- Top bar in viewer -->
+            <div>
+              <div class="flex items-center justify-between pb-3.5 mb-3 border-b border-sky-100">
+                <div class="flex items-center gap-2">
+                  <span id="desktop-card-id" class="px-2.5 py-1 text-xs font-mono font-bold rounded-lg bg-sky-100/80 text-sky-700 border border-sky-200">
+                    #01
+                  </span>
+                  <span id="desktop-card-index" class="text-xs font-mono text-slate-500 font-medium">
+                    Question 1 of 100
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span id="desktop-badge-mastered" class="hidden px-2.5 py-0.5 text-xs font-mono font-bold uppercase rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                    Mastered
+                  </span>
+                  <span id="desktop-badge-bookmarked" class="hidden px-2.5 py-0.5 text-xs font-mono font-bold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                    Saved
+                  </span>
+                  
+                  <!-- Prev / Next Navigation buttons in header -->
+                  <div class="flex items-center gap-1.5 ml-2">
+                    <button id="desktop-prev-btn" class="btn-press p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Previous card (Left Arrow)">
+                      <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    </button>
+                    <button id="desktop-next-btn" class="btn-press p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Next card (Right Arrow)">
+                      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Center Question Area (Large Text) -->
+              <div class="pt-2 pb-3 select-text">
+                <h2 id="desktop-question" class="text-xl sm:text-2xl font-bold text-slate-900 leading-snug tracking-tight">
+                  Question text
+                </h2>
+              </div>
+            </div>
+
+            <!-- Answer Box with soft tint -->
+            <div class="my-auto flex-1 flex flex-col justify-center py-2 select-text">
+              <div class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative">
+                <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-sky-100">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-sky-600"></i>
+                    Verified Explanation
+                  </span>
+                  <div id="desktop-audio-wave" class="hidden flex items-center gap-1 text-sky-600 text-xs font-mono font-bold">
+                    <span class="w-1 bg-sky-500 rounded-full audio-bar-1"></span>
+                    <span class="w-1 bg-sky-500 rounded-full audio-bar-2"></span>
+                    <span class="w-1 bg-sky-500 rounded-full audio-bar-3"></span>
+                    <span class="ml-1 text-[10px] uppercase">Playing</span>
+                  </div>
+                </div>
+
+                <p id="desktop-answer" class="text-sm sm:text-base text-slate-800 leading-relaxed font-normal">
+                  Answer explanation
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom Actions: [Save, Master, Listen] + arrow keys hint -->
+            <div class="pt-3 border-t border-sky-100 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5 flex-1">
+                <button id="desktop-save-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                  <i data-lucide="bookmark" class="w-4 h-4"></i>
+                  <span>Save</span>
+                </button>
+
+                <button id="desktop-master-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Master</span>
+                </button>
+
+                <button id="desktop-listen-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                  <i data-lucide="volume-2" class="w-4 h-4"></i>
+                  <span>Listen</span>
+                </button>
+              </div>
+
+              <div class="text-[11px] font-mono text-slate-400 hidden sm:flex items-center gap-1.5 shrink-0">
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold text-[10px]">←</kbd>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold text-[10px]">→</kbd>
+                <span>Navigate</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right (40%): Sticky, scrollable Grid list of all cards for instant jumping -->
+          <div class="w-[40%] h-full flex flex-col bg-white/95 backdrop-blur-md rounded-3xl border border-sky-100 card-shadow p-4 overflow-hidden">
+            
+            <!-- Header of Catalog -->
+            <div class="flex items-center justify-between pb-3 mb-2 border-b border-sky-100 shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">Deck Catalog</h3>
+              </div>
+              <span id="desktop-grid-count" class="text-xs font-mono text-slate-500 font-medium">0 cards</span>
+            </div>
+
+            <!-- Scrollable list of cards -->
+            <div id="desktop-cards-container" class="flex-1 overflow-y-auto space-y-2 pr-1 no-scrollbar">
+              <!-- Dynamically populated cards -->
+            </div>
+
+          </div>
+
+        </section>
+
       </main>
 
       <!-- GROUNDED BOTTOM NAVIGATION BAR (Strictly glued to bottom) -->
-      <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-sky-100 z-50 pt-2 px-6 flex justify-around items-center safe-bottom-nav shadow-lg">
+      <nav id="bottom-nav-bar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-sky-100 z-50 pt-2 px-6 flex justify-around items-center safe-bottom-nav shadow-lg">
         
         <!-- Tab 1: Feed (Snap vertical scroll) -->
         <button id="tab-reels-btn" class="nav-tab-btn btn-press flex flex-col items-center justify-center gap-1 py-1 px-4 text-sky-600 transition-all">
@@ -322,6 +444,30 @@
 
       <!-- FLOATING TOAST FEEDBACK -->
       <div id="toast-wrapper" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-full max-w-xs px-4 flex flex-col items-center gap-1.5"></div>
+
+      <!-- FIRST-LAUNCH DEVICE SELECTOR MODAL -->
+      <div id="device-selector-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 card-shadow border border-sky-100 text-center flex flex-col items-center relative">
+          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-3 shadow-sm">
+            <i data-lucide="layout" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-1">Select View</h3>
+          <p class="text-xs text-slate-500 mb-6 leading-relaxed">Choose your preferred experience. You can switch modes anytime from the top bar.</p>
+          
+          <div class="grid grid-cols-2 gap-3.5 w-full">
+            <button id="select-mobile-btn" class="btn-press flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-sky-100 hover:border-sky-500 bg-sky-50/40 hover:bg-sky-50 transition group text-center">
+              <span class="text-3xl">📱</span>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-sky-600">Mobile</span>
+              <span class="text-[10px] text-slate-500 font-mono">Vertical Reels</span>
+            </button>
+            <button id="select-desktop-btn" class="btn-press flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-sky-100 hover:border-sky-500 bg-sky-50/40 hover:bg-sky-50 transition group text-center">
+              <span class="text-3xl">💻</span>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-sky-600">Desktop</span>
+              <span class="text-[10px] text-slate-500 font-mono">2-Col Dashboard</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- PIN-PROTECTED ADMIN GATE MODAL -->
       <div id="pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
@@ -467,6 +613,7 @@
         let allCards = [];
         let filteredCards = [];
         let activeTab = 'reels'; // 'reels' or 'grid'
+        let deviceMode = 'mobile'; // 'mobile' or 'desktop'
         let activeFilter = 'all'; // 'all', 'mastered', 'bookmarked'
         let searchQuery = '';
         let currentFeedIndex = 0;
@@ -478,6 +625,33 @@
         let bookmarkedIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY + '_bookmarked') || '[]'));
 
         // DOM Elements
+        const appFrame = document.getElementById('app-frame');
+        const bottomNavBar = document.getElementById('bottom-nav-bar');
+        const modeToggleBtn = document.getElementById('mode-toggle-btn');
+        const modeToggleIcon = document.getElementById('mode-toggle-icon');
+
+        // Device Selector Modal Elements
+        const deviceSelectorModal = document.getElementById('device-selector-modal');
+        const selectMobileBtn = document.getElementById('select-mobile-btn');
+        const selectDesktopBtn = document.getElementById('select-desktop-btn');
+
+        // Desktop Dashboard Elements
+        const desktopDashboard = document.getElementById('desktop-dashboard');
+        const desktopCardId = document.getElementById('desktop-card-id');
+        const desktopCardIndex = document.getElementById('desktop-card-index');
+        const desktopBadgeMastered = document.getElementById('desktop-badge-mastered');
+        const desktopBadgeBookmarked = document.getElementById('desktop-badge-bookmarked');
+        const desktopPrevBtn = document.getElementById('desktop-prev-btn');
+        const desktopNextBtn = document.getElementById('desktop-next-btn');
+        const desktopQuestion = document.getElementById('desktop-question');
+        const desktopAnswer = document.getElementById('desktop-answer');
+        const desktopAudioWave = document.getElementById('desktop-audio-wave');
+        const desktopSaveBtn = document.getElementById('desktop-save-btn');
+        const desktopMasterBtn = document.getElementById('desktop-master-btn');
+        const desktopListenBtn = document.getElementById('desktop-listen-btn');
+        const desktopGridCount = document.getElementById('desktop-grid-count');
+        const desktopCardsContainer = document.getElementById('desktop-cards-container');
+
         const feedScreen = document.getElementById('feed-screen');
         const gridScreen = document.getElementById('grid-screen');
         const feedItemsList = document.getElementById('feed-items-list');
@@ -684,17 +858,26 @@
             emptyView.classList.remove('hidden');
             feedItemsList.innerHTML = '';
             gridCardsList.innerHTML = '';
+            if (desktopCardsContainer) desktopCardsContainer.innerHTML = '';
+            if (desktopDashboard) desktopDashboard.classList.add('hidden');
           } else {
             emptyView.classList.add('hidden');
             
             buildFeedDOM();
             buildGridDOM();
+            buildDesktopCatalogDOM();
 
-            if (activeTab === 'reels') {
-              const targetIdx = preserveIndex ? Math.min(currentFeedIndex, filteredCards.length - 1) : 0;
-              jumpToFeedIndex(targetIdx);
+            const targetIdx = preserveIndex ? Math.min(currentFeedIndex, filteredCards.length - 1) : 0;
+            currentFeedIndex = targetIdx;
+
+            if (deviceMode === 'desktop') {
+              updateDesktopActiveCard();
             } else {
-              gridScreen.scrollTop = savedGridScrollTop;
+              if (activeTab === 'reels') {
+                jumpToFeedIndex(targetIdx);
+              } else {
+                gridScreen.scrollTop = savedGridScrollTop;
+              }
             }
           }
 
@@ -754,6 +937,21 @@
           if (wave) {
             wave.classList.toggle('hidden', !isPlaying);
           }
+
+          // Update desktop UI if active card matches
+          if (desktopListenBtn && filteredCards[currentFeedIndex]?.id === Number(cardId)) {
+            if (isPlaying) {
+              desktopListenBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-sky-100 text-sky-700 border border-sky-300 shadow-sm';
+              desktopListenBtn.innerHTML = `<i data-lucide="square" class="w-4 h-4 fill-current text-sky-600"></i><span>Stop</span>`;
+            } else {
+              desktopListenBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700';
+              desktopListenBtn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-slate-500"></i><span>Listen</span>`;
+            }
+            if (desktopAudioWave) {
+              desktopAudioWave.classList.toggle('hidden', !isPlaying);
+            }
+          }
+
           renderIcons();
         }
 
@@ -1020,6 +1218,228 @@
         tabReelsBtn.addEventListener('click', () => openCardInFeedInstantly(currentFeedIndex));
         tabGridBtn.addEventListener('click', openGridView);
 
+        // 5.5 DESKTOP DASHBOARD MODE LOGIC
+        function setDeviceMode(mode) {
+          deviceMode = mode;
+          sessionStorage.setItem('eee_device_mode', mode);
+
+          if (mode === 'desktop') {
+            appFrame.className = 'w-full max-w-6xl min-h-[100dvh] h-screen bg-slate-50 sm:shadow-2xl sm:border sm:border-slate-200 overflow-hidden relative flex flex-col mx-auto px-6';
+            feedScreen.classList.add('hidden');
+            gridScreen.classList.add('hidden');
+            if (bottomNavBar) bottomNavBar.classList.add('hidden');
+            if (desktopDashboard) desktopDashboard.classList.remove('hidden');
+
+            if (modeToggleBtn) modeToggleBtn.title = 'Switch to Mobile view';
+            if (modeToggleIcon) modeToggleIcon.setAttribute('data-lucide', 'smartphone');
+
+            buildDesktopCatalogDOM();
+            updateDesktopActiveCard();
+          } else {
+            appFrame.className = 'w-full max-w-md min-h-[100dvh] h-[100dvh] sm:h-[844px] bg-gradient-to-b from-sky-50 via-cyan-50/40 to-slate-50 sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-sky-100 overflow-hidden relative flex flex-col mx-auto';
+            if (desktopDashboard) desktopDashboard.classList.add('hidden');
+            if (bottomNavBar) bottomNavBar.classList.remove('hidden');
+
+            if (modeToggleBtn) modeToggleBtn.title = 'Switch to Desktop view';
+            if (modeToggleIcon) modeToggleIcon.setAttribute('data-lucide', 'monitor');
+
+            if (activeTab === 'reels') {
+              feedScreen.classList.remove('hidden');
+              gridScreen.classList.add('hidden');
+              jumpToFeedIndex(currentFeedIndex);
+            } else {
+              feedScreen.classList.add('hidden');
+              gridScreen.classList.remove('hidden');
+            }
+          }
+
+          updateBadges();
+          renderIcons();
+        }
+
+        function selectDesktopCardIndex(index) {
+          if (index < 0 || index >= filteredCards.length) return;
+          if (currentFeedIndex !== index) {
+            stopAudio(true);
+          }
+          currentFeedIndex = index;
+          updateDesktopActiveCard();
+        }
+
+        function updateDesktopActiveCard() {
+          if (!desktopDashboard || deviceMode !== 'desktop') return;
+          if (filteredCards.length === 0) {
+            desktopDashboard.classList.add('hidden');
+            return;
+          }
+          desktopDashboard.classList.remove('hidden');
+
+          const safeIdx = Math.max(0, Math.min(currentFeedIndex, filteredCards.length - 1));
+          currentFeedIndex = safeIdx;
+          const card = filteredCards[safeIdx];
+          if (!card) return;
+
+          const isMastered = masteredIds.has(card.id);
+          const isBookmarked = bookmarkedIds.has(card.id);
+          const isSpeaking = activeAudioId === card.id;
+
+          if (desktopCardId) desktopCardId.textContent = `#${String(card.id).padStart(2, '0')}`;
+          if (desktopCardIndex) desktopCardIndex.textContent = `Question ${safeIdx + 1} of ${filteredCards.length}`;
+          if (desktopQuestion) desktopQuestion.textContent = card.question;
+          if (desktopAnswer) desktopAnswer.textContent = card.answer;
+
+          if (desktopBadgeMastered) desktopBadgeMastered.classList.toggle('hidden', !isMastered);
+          if (desktopBadgeBookmarked) desktopBadgeBookmarked.classList.toggle('hidden', !isBookmarked);
+          if (desktopAudioWave) desktopAudioWave.classList.toggle('hidden', !isSpeaking);
+
+          if (desktopSaveBtn) {
+            if (isBookmarked) {
+              desktopSaveBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-amber-50 text-amber-700 border border-amber-200 shadow-sm';
+              desktopSaveBtn.innerHTML = `<i data-lucide="bookmark" class="w-4 h-4 fill-current text-amber-600"></i><span>Saved</span>`;
+            } else {
+              desktopSaveBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700';
+              desktopSaveBtn.innerHTML = `<i data-lucide="bookmark" class="w-4 h-4 text-slate-500"></i><span>Save</span>`;
+            }
+          }
+
+          if (desktopMasterBtn) {
+            if (isMastered) {
+              desktopMasterBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm';
+              desktopMasterBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i><span>Mastered</span>`;
+            } else {
+              desktopMasterBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700';
+              desktopMasterBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-slate-500"></i><span>Master</span>`;
+            }
+          }
+
+          if (desktopListenBtn) {
+            if (isSpeaking) {
+              desktopListenBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-sky-100 text-sky-700 border border-sky-300 shadow-sm';
+              desktopListenBtn.innerHTML = `<i data-lucide="square" class="w-4 h-4 fill-current text-sky-600"></i><span>Stop</span>`;
+            } else {
+              desktopListenBtn.className = 'btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700';
+              desktopListenBtn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-slate-500"></i><span>Listen</span>`;
+            }
+          }
+
+          if (desktopPrevBtn) {
+            desktopPrevBtn.disabled = safeIdx <= 0;
+            desktopPrevBtn.classList.toggle('opacity-40', safeIdx <= 0);
+          }
+          if (desktopNextBtn) {
+            desktopNextBtn.disabled = safeIdx >= filteredCards.length - 1;
+            desktopNextBtn.classList.toggle('opacity-40', safeIdx >= filteredCards.length - 1);
+          }
+
+          if (desktopCardsContainer) {
+            const catalogItems = desktopCardsContainer.querySelectorAll('.desktop-catalog-item');
+            catalogItems.forEach((el, idx) => {
+              if (idx === safeIdx) {
+                el.className = 'desktop-catalog-item p-3 rounded-2xl border-2 border-sky-500 bg-sky-50/70 shadow-sm flex flex-col justify-between cursor-pointer transition-all';
+                el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+              } else {
+                el.className = 'desktop-catalog-item p-3 rounded-2xl border border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50/80 transition-all flex flex-col justify-between cursor-pointer';
+              }
+            });
+          }
+
+          updateHeaderCounter(safeIdx);
+          renderIcons();
+        }
+
+        function buildDesktopCatalogDOM() {
+          if (!desktopCardsContainer) return;
+          desktopCardsContainer.innerHTML = '';
+          if (desktopGridCount) desktopGridCount.textContent = `${filteredCards.length} cards`;
+
+          filteredCards.forEach((item, index) => {
+            const isMastered = masteredIds.has(item.id);
+            const isBookmarked = bookmarkedIds.has(item.id);
+            const isActive = index === currentFeedIndex;
+
+            const el = document.createElement('div');
+            el.dataset.index = index;
+            el.dataset.id = item.id;
+            el.className = `desktop-catalog-item p-3 rounded-2xl border ${
+              isActive 
+                ? 'border-2 border-sky-500 bg-sky-50/70 shadow-sm' 
+                : 'border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50/80'
+            } transition-all flex flex-col justify-between cursor-pointer`;
+
+            let dotColor = 'bg-slate-200';
+            if (isMastered) dotColor = 'bg-emerald-500';
+            else if (isBookmarked) dotColor = 'bg-amber-500';
+
+            el.innerHTML = `
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] px-2 py-0.5 rounded-md font-mono font-medium text-sky-700 bg-sky-100/70">
+                  #${String(item.id).padStart(2, '0')}
+                </span>
+                <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+              </div>
+              <h4 class="text-xs font-semibold text-slate-800 leading-snug line-clamp-2">
+                ${escapeHtml(item.question)}
+              </h4>
+            `;
+
+            el.addEventListener('click', () => {
+              selectDesktopCardIndex(index);
+            });
+
+            desktopCardsContainer.appendChild(el);
+          });
+        }
+
+        if (desktopPrevBtn) {
+          desktopPrevBtn.addEventListener('click', () => {
+            if (currentFeedIndex > 0) selectDesktopCardIndex(currentFeedIndex - 1);
+          });
+        }
+        if (desktopNextBtn) {
+          desktopNextBtn.addEventListener('click', () => {
+            if (currentFeedIndex < filteredCards.length - 1) selectDesktopCardIndex(currentFeedIndex + 1);
+          });
+        }
+        if (desktopSaveBtn) {
+          desktopSaveBtn.addEventListener('click', () => {
+            const card = filteredCards[currentFeedIndex];
+            if (card) toggleBookmark(card.id);
+          });
+        }
+        if (desktopMasterBtn) {
+          desktopMasterBtn.addEventListener('click', () => {
+            const card = filteredCards[currentFeedIndex];
+            if (card) toggleMastered(card.id);
+          });
+        }
+        if (desktopListenBtn) {
+          desktopListenBtn.addEventListener('click', () => {
+            const card = filteredCards[currentFeedIndex];
+            if (card) readAloud(card.id);
+          });
+        }
+        if (modeToggleBtn) {
+          modeToggleBtn.addEventListener('click', () => {
+            const nextMode = deviceMode === 'desktop' ? 'mobile' : 'desktop';
+            setDeviceMode(nextMode);
+            showToast(`Switched to ${nextMode === 'desktop' ? 'Desktop Dashboard' : 'Mobile Reels'} mode`, 'info');
+          });
+        }
+        if (selectMobileBtn) {
+          selectMobileBtn.addEventListener('click', () => {
+            if (deviceSelectorModal) deviceSelectorModal.classList.add('hidden');
+            setDeviceMode('mobile');
+            showToast('Mobile Reels mode selected', 'info');
+          });
+        }
+        if (selectDesktopBtn) {
+          selectDesktopBtn.addEventListener('click', () => {
+            if (deviceSelectorModal) deviceSelectorModal.classList.add('hidden');
+            setDeviceMode('desktop');
+            showToast('Desktop Dashboard mode selected', 'info');
+          });
+        }
+
         // Snap scroll observer: auto-cancel speech on card change
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
@@ -1059,10 +1479,37 @@
           }, 80);
         }, { passive: true });
 
-        // Keyboard Navigation (Arrow Up / Down reels jumping)
+        // Keyboard Navigation (Desktop Left/Right and Mobile Arrow Up/Down)
         window.addEventListener('keydown', (e) => {
           if (['input', 'textarea'].includes(document.activeElement?.tagName?.toLowerCase())) return;
 
+          // Desktop mode navigation
+          if (deviceMode === 'desktop' && filteredCards.length > 0) {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (currentFeedIndex > 0) {
+                selectDesktopCardIndex(currentFeedIndex - 1);
+              }
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (currentFeedIndex < filteredCards.length - 1) {
+                selectDesktopCardIndex(currentFeedIndex + 1);
+              }
+            } else if (e.key === 'm' || e.key === 'M') {
+              const card = filteredCards[currentFeedIndex];
+              if (card) toggleMastered(card.id);
+            } else if (e.key === 's' || e.key === 'S' || e.key === 'b' || e.key === 'B') {
+              const card = filteredCards[currentFeedIndex];
+              if (card) toggleBookmark(card.id);
+            } else if (e.key === ' ') {
+              e.preventDefault();
+              const card = filteredCards[currentFeedIndex];
+              if (card) readAloud(card.id);
+            }
+            return;
+          }
+
+          // Mobile mode reels navigation
           if (activeTab === 'reels' && filteredCards.length > 0) {
             if (e.key === 'ArrowDown' || e.key === 'PageDown') {
               e.preventDefault();
@@ -1543,6 +1990,16 @@
         window.addEventListener('DOMContentLoaded', () => {
           checkAdminRoute();
           window.addEventListener('hashchange', checkAdminRoute);
+
+          // Check first-launch device selector
+          const savedMode = sessionStorage.getItem('eee_device_mode');
+          if (!savedMode) {
+            if (deviceSelectorModal) deviceSelectorModal.classList.remove('hidden');
+            setDeviceMode(window.innerWidth >= 1024 ? 'desktop' : 'mobile');
+          } else {
+            setDeviceMode(savedMode);
+          }
+
           renderIcons();
           fetchDeck();
         });
