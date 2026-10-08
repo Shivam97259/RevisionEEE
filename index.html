@@ -91,7 +91,7 @@
       .reel-card-item {
         scroll-snap-align: start;
         scroll-snap-stop: always;
-        height: 100%;
+        height: calc(100dvh - 175px);
         width: 100%;
         flex-shrink: 0;
       }
@@ -133,6 +133,18 @@
       .audio-bar-1 { animation: soundwave 0.8s ease-in-out infinite; }
       .audio-bar-2 { animation: soundwave 0.8s ease-in-out 0.2s infinite; }
       .audio-bar-3 { animation: soundwave 0.8s ease-in-out 0.4s infinite; }
+
+      /* Active Recall Blur Mode */
+      .recall-blurred {
+        filter: blur(8px) !important;
+        user-select: none !important;
+        cursor: pointer !important;
+        transition: filter 0.2s ease;
+      }
+      .recall-revealed {
+        filter: none !important;
+        user-select: text !important;
+      }
     </style>
   </head>
   <body class="flex items-center justify-center min-h-screen bg-slate-100 sm:py-4 select-none">
@@ -140,52 +152,75 @@
     <!-- DEDICATED MOBILE VIEWPORT FRAME -->
     <div id="app-frame" class="w-full max-w-md min-h-[100dvh] h-[100dvh] sm:h-[844px] bg-gradient-to-b from-sky-50 via-cyan-50/40 to-slate-50 sm:rounded-[36px] sm:shadow-2xl sm:border sm:border-sky-100 overflow-hidden relative flex flex-col mx-auto">
       
-      <!-- STICKY TOP HEADER (Guaranteed hard top spacer & clearance) -->
-      <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-sky-100 px-4 pt-8 sm:pt-6 pb-3 safe-top-header flex flex-col gap-2 shrink-0">
+      <!-- STICKY TOP HEADER (Streamlined 2-Line Layout with Safe Area Clearance) -->
+      <header class="sticky top-0 z-40 bg-white border-b border-slate-100 px-4 py-3 sm:px-6 pt-[max(env(safe-area-inset-top),16px)] safe-top-header flex flex-col shrink-0">
+        
+        <!-- ROW 1: Identity & Core Actions (Logo + Title | Search | Refresh | Sync Icons) -->
         <div class="flex items-center justify-between">
           
-          <!-- Left: Clean Sky Blue Brand Presence -->
+          <!-- Left: Branding (Lightning Bolt Logo + EEE Flashcards Title) -->
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-sky-500/30">
-              <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+            <div class="w-9 h-9 rounded-xl bg-sky-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-500/25 shrink-0">
+              <i data-lucide="zap" class="w-5 h-5 text-white"></i>
             </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <h1 class="text-sm font-bold tracking-tight text-slate-900">EEE Flashcards</h1>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-100/80 text-sky-700 border border-sky-200/60 font-semibold">DECK</span>
-              </div>
-              <p class="text-[10px] text-slate-500 font-mono tracking-tight flex items-center gap-1">
-                <span id="counter-badge" class="text-sky-600 font-semibold">Loading deck...</span>
-              </p>
-            </div>
+            <h1 class="text-base font-bold tracking-tight text-slate-900 truncate">EEE Flashcards</h1>
           </div>
 
-          <!-- Right: Neatly Grouped Action Buttons -->
-          <div class="flex items-center gap-2">
-            <!-- Mode Toggle Button (Mobile / Desktop) -->
-            <button id="mode-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Toggle Desktop/Mobile mode">
-              <i id="mode-toggle-icon" data-lucide="monitor" class="w-3.5 h-3.5"></i>
-            </button>
-
+          <!-- Right: Functional Icons Grouped (Search, Refresh, Sync/Upload) -->
+          <div class="flex items-center gap-1.5">
             <!-- Search Button -->
-            <button id="search-toggle-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Search cards">
-              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            <button id="search-toggle-btn" class="btn-press rounded-full w-9 h-9 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 border border-sky-100/70 transition shadow-sm" title="Search cards">
+              <i data-lucide="search" class="w-4 h-4"></i>
             </button>
 
             <!-- Refresh Deck Button -->
-            <button id="refresh-deck-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 transition" title="Refresh deck from GitHub">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <button id="refresh-deck-btn" class="btn-press rounded-full w-9 h-9 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-slate-600 border border-sky-100/70 transition shadow-sm" title="Refresh deck from GitHub">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             </button>
 
-            <!-- Admin Gate Button (Lock Icon) -->
-            <button id="admin-gate-btn" class="btn-press rounded-full w-8 h-8 flex items-center justify-center bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-100 transition" title="Admin Upload & Sync">
-              <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+            <!-- Sync / Upload Button (Admin Gate) -->
+            <button id="admin-gate-btn" class="btn-press rounded-full w-9 h-9 flex items-center justify-center bg-sky-50/80 hover:bg-sky-100 text-sky-600 border border-sky-100/70 transition shadow-sm" title="Sync & Commit to GitHub">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
+        <!-- ROW 2: Progression & Data ([DECK | 🔥 1 Days | 📺 Mode] | Mastered: X/Y (Z%)) -->
+        <div class="flex items-center justify-between px-1.5 mt-3 pt-0.5">
+          <!-- Left: DECK Badge, Active Streak Fire Icon, and Mode Toggle Icon -->
+          <div class="flex items-center gap-2">
+            <!-- DECK Badge -->
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-sky-100/80 text-sky-700 border border-sky-200/60 font-bold tracking-wide">DECK</span>
+
+            <!-- Streak Badge: 🔥 X Days -->
+            <div id="streak-badge" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 text-[10px] font-bold font-mono shadow-sm" title="Active Study Streak">
+              <span class="text-xs leading-none">🔥</span>
+              <span id="streak-count">1</span>
+              <span>Days</span>
+            </div>
+
+            <!-- Mode Toggle Icon Button (Mobile / Desktop) -->
+            <button id="mode-toggle-btn" class="btn-press flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50/80 hover:bg-sky-100 text-slate-600 hover:text-sky-700 border border-sky-100/70 text-[10px] font-mono font-semibold transition" title="Toggle Desktop/Mobile mode">
+              <i id="mode-toggle-icon" data-lucide="monitor" class="w-3.5 h-3.5"></i>
+              <span class="hidden xs:inline">Mode</span>
+            </button>
+          </div>
+
+          <!-- Right: Precise Mastered Count & Percentage -->
+          <div class="flex items-center gap-1.5 text-[11px] font-mono font-medium text-slate-500 shrink-0">
+            <span class="text-slate-400">Mastered:</span>
+            <span id="mastery-stat-text" class="font-bold text-sky-700 transition-all">0/0 (0%)</span>
+            <span id="counter-badge" class="hidden"></span>
+          </div>
+        </div>
+
+        <!-- 4px Thin Sky-Blue Progress Bar Directly Below Header -->
+        <div class="w-full bg-slate-100 h-1 overflow-hidden shrink-0 rounded-full mt-2">
+          <div id="header-progress-bar" class="h-full bg-gradient-to-r from-sky-400 to-sky-600 transition-all duration-300 rounded-full" style="width: 0%"></div>
+        </div>
+
         <!-- Expandable Live Search Input -->
-        <div id="search-bar-container" class="hidden transition-all duration-200 pt-1">
+        <div id="search-bar-container" class="hidden transition-all duration-200 pt-2">
           <div class="relative flex items-center">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <i data-lucide="search" class="w-3.5 h-3.5"></i>
@@ -279,7 +314,7 @@
         </div>
 
         <!-- VIEW 1: FULL-HEIGHT REELS / FEED VIEW (EDGE-TO-EDGE SNAP SCROLL) -->
-        <section id="feed-screen" class="reels-feed-container flex-1 w-full h-[calc(100dvh-140px)] no-scrollbar relative">
+        <section id="feed-screen" class="reels-feed-container flex flex-col h-full w-full h-[calc(100dvh-175px)] no-scrollbar relative overflow-y-scroll" style="height: calc(100dvh - 175px); scroll-snap-type: y mandatory; overscroll-behavior-y: contain; -ms-overflow-style: none; scrollbar-width: none; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
           <!-- Dynamically injected feed card items -->
           <div id="feed-items-list" class="w-full flex flex-col"></div>
         </section>
@@ -346,7 +381,7 @@
 
             <!-- Answer Box with soft tint -->
             <div class="my-auto flex-1 flex flex-col justify-center py-2 select-text">
-              <div class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative">
+              <div class="desktop-answer-card-box bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative cursor-pointer group">
                 <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-sky-100">
                   <span class="text-xs font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
                     <i data-lucide="check-circle" class="w-4 h-4 text-sky-600"></i>
@@ -360,36 +395,35 @@
                   </div>
                 </div>
 
-                <p id="desktop-answer" class="text-sm sm:text-base text-slate-800 leading-relaxed font-normal">
-                  Answer explanation
-                </p>
+                <div class="desktop-answer-wrap relative">
+                  <p id="desktop-answer" class="text-sm sm:text-base text-slate-800 leading-relaxed font-normal transition-all duration-200">
+                    Answer explanation
+                  </p>
+                  <div id="desktop-reveal-badge" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span class="px-3.5 py-1.5 rounded-full bg-white/95 text-sky-700 font-bold text-xs shadow-md border border-sky-200 flex items-center gap-1.5">
+                      Tap to Reveal Answer 👁️
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Bottom Actions: [Save, Master, Listen] + arrow keys hint -->
-            <div class="pt-3 border-t border-sky-100 flex items-center justify-between gap-3">
-              <div class="flex items-center gap-2.5 flex-1">
-                <button id="desktop-save-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
-                  <i data-lucide="bookmark" class="w-4 h-4"></i>
-                  <span>Save</span>
-                </button>
+            <!-- Bottom Actions: [Save, Master, Listen] -->
+            <div class="pt-3 border-t border-sky-100 flex items-center justify-between gap-2.5 w-full">
+              <button id="desktop-save-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                <span>Save</span>
+              </button>
 
-                <button id="desktop-master-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
-                  <i data-lucide="check" class="w-4 h-4"></i>
-                  <span>Master</span>
-                </button>
+              <button id="desktop-master-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Master</span>
+              </button>
 
-                <button id="desktop-listen-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
-                  <i data-lucide="volume-2" class="w-4 h-4"></i>
-                  <span>Listen</span>
-                </button>
-              </div>
-
-              <div class="text-[11px] font-mono text-slate-400 hidden sm:flex items-center gap-1.5 shrink-0">
-                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold text-[10px]">←</kbd>
-                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold text-[10px]">→</kbd>
-                <span>Navigate</span>
-              </div>
+              <button id="desktop-listen-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <i data-lucide="volume-2" class="w-4 h-4"></i>
+                <span>Listen</span>
+              </button>
             </div>
 
           </div>
@@ -441,6 +475,337 @@
         </button>
 
       </nav>
+
+      <!-- FLOATING HUB MENU TRIGGER BUTTON (Action Hub) -->
+      <button 
+        id="floating-hub-btn" 
+        class="fixed bottom-20 right-5 z-40 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-13 sm:h-13 rounded-full shadow-lg bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition shadow-sky-500/30 group" 
+        title="Practice Hub"
+      >
+        <i data-lucide="sparkles" class="w-5 h-5 text-white group-hover:rotate-12 transition-transform"></i>
+      </button>
+
+      <!-- PRACTICE HUB POPUP MODAL/DRAWER -->
+      <div id="practice-hub-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-5 card-shadow border border-sky-100 flex flex-col relative transition-transform">
+          
+          <button id="close-practice-hub-btn" class="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Header -->
+          <div class="flex items-center gap-2.5 mb-3.5 pb-3 border-b border-sky-100">
+            <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shadow-sm">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Practice Hub</h3>
+              <p class="text-[10px] text-slate-500 font-mono">Gamified Study Routines</p>
+            </div>
+          </div>
+
+          <!-- 3 Mode Options / Routes -->
+          <div class="space-y-2.5">
+            <!-- 1. Daily 15 Sprint -->
+            <button id="hub-sprint-btn" class="btn-press w-full p-3 rounded-2xl bg-sky-50/60 hover:bg-sky-50 border border-sky-100 flex items-center gap-3 text-left transition group">
+              <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold shrink-0">⚡</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold text-slate-800 group-hover:text-sky-700">Daily 15 Sprint</h4>
+                  <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-200">15 Cards</span>
+                </div>
+                <p class="text-[10px] text-slate-500 truncate">Quick 15 high-yield EEE questions</p>
+              </div>
+            </button>
+
+            <!-- 2. 60s Speed Drill -->
+            <button id="hub-speed-btn" class="btn-press w-full p-3 rounded-2xl bg-sky-50/60 hover:bg-sky-50 border border-sky-100 flex items-center gap-3 text-left transition group">
+              <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-sm font-bold shrink-0">⏱️</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold text-slate-800 group-hover:text-sky-700">60s Speed Drill</h4>
+                  <span id="speed-drill-pill" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">Exam Timer</span>
+                </div>
+                <p class="text-[10px] text-slate-500 truncate">Timed rapid-fire speed challenge</p>
+              </div>
+            </button>
+
+            <!-- 3. Toggle Blur / Active Recall -->
+            <button id="hub-recall-btn" class="btn-press w-full p-3 rounded-2xl bg-sky-50/60 hover:bg-sky-50 border border-sky-100 flex items-center gap-3 text-left transition group">
+              <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold shrink-0">👁️</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold text-slate-800 group-hover:text-sky-700">👁️ Active Recall Mode</h4>
+                  <span id="recall-status-pill" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">OFF</span>
+                </div>
+                <p class="text-[10px] text-slate-500 truncate">Blur answers until tapped for self-testing</p>
+              </div>
+            </button>
+          </div>
+
+          <p class="text-[9px] text-slate-400 text-center mt-3 font-mono">Tap any mode to start</p>
+        </div>
+      </div>
+
+      <!-- DAILY 15 SPRINT MODAL OVERLAY -->
+      <div id="sprint-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div id="sprint-card-container" class="bg-white rounded-3xl w-full max-w-md p-6 card-shadow border border-sky-100 flex flex-col justify-between min-h-[480px] max-h-[90vh] relative overflow-hidden transition-all">
+          
+          <!-- Sprint Header -->
+          <div class="flex items-center justify-between pb-3.5 mb-2 border-b border-sky-100 shrink-0">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold shadow-sm">⚡</span>
+              <div>
+                <h3 id="sprint-header-title" class="text-xs font-bold text-slate-900 tracking-tight">Sprint: Card 1 of 15</h3>
+                <p id="sprint-header-sub" class="text-[10px] text-slate-500 font-mono">Daily High-Yield Focus</p>
+              </div>
+            </div>
+            <button id="close-sprint-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors" title="Exit Sprint">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Sprint Card View (Active Card) -->
+          <div id="sprint-active-view" class="flex-1 flex flex-col justify-between py-2 select-text overflow-y-auto no-scrollbar">
+            <!-- Question Box -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <span id="sprint-card-num" class="px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-lg bg-sky-100/80 text-sky-700 border border-sky-200/60">
+                  #01
+                </span>
+                <span id="sprint-card-mastered-badge" class="hidden px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                  Mastered
+                </span>
+              </div>
+              <h2 id="sprint-question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-snug tracking-tight">
+                Question text
+              </h2>
+            </div>
+
+            <!-- Answer Box (Same light theme card design) -->
+            <div class="my-auto py-2">
+              <div id="sprint-answer-box" class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative cursor-pointer group">
+                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-sky-100">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i>
+                    Verified Explanation
+                  </span>
+                </div>
+                <div class="relative">
+                  <p id="sprint-answer-text" class="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal transition-all duration-200">
+                    Answer text
+                  </p>
+                  <div id="sprint-reveal-badge" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span class="px-3.5 py-1.5 rounded-full bg-white/95 text-sky-700 font-bold text-xs shadow-md border border-sky-200 flex items-center gap-1.5">
+                      Tap to Reveal Answer 👁️
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sprint Action Buttons: [Next ⏭️] and [Mastered & Next ✅] -->
+            <div class="pt-4 border-t border-sky-100 flex items-center gap-2.5 shrink-0">
+              <button id="sprint-skip-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <span>Next</span>
+                <span>⏭️</span>
+              </button>
+              <button id="sprint-master-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                <span>Mastered & Next</span>
+                <span>✅</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sprint Finish Screen -->
+          <div id="sprint-finish-view" class="hidden flex-1 flex flex-col items-center justify-center text-center p-4">
+            <div class="w-16 h-16 rounded-3xl bg-amber-50 text-amber-500 border border-amber-200/80 flex items-center justify-center text-3xl mb-4 shadow-sm">
+              🎉
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Sprint Finished!</h3>
+            <p class="text-xs text-slate-500 mb-6">Great job completing your Daily 15 Sprint workout.</p>
+            
+            <div class="bg-sky-50/70 border border-sky-100 rounded-2xl p-4 w-full mb-6 text-left space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500">Cards Practiced:</span>
+                <span id="sprint-session-practiced" class="font-bold text-slate-800">15 / 15</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500">Mastered this session:</span>
+                <span id="sprint-session-mastered" class="font-bold text-emerald-600">0</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500">Daily Streak:</span>
+                <span class="font-bold text-amber-600 flex items-center gap-1">🔥 <span id="sprint-finish-streak">1</span> Days</span>
+              </div>
+            </div>
+
+            <button id="exit-sprint-btn" class="btn-press w-full py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/20 transition">
+              Exit Sprint
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 60-SECOND SPEED DRILL MODAL OVERLAY (STEP 4) -->
+      <div id="speed-drill-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div id="speed-drill-container" class="bg-white rounded-3xl w-full max-w-md p-6 card-shadow border border-sky-100 flex flex-col justify-between min-h-[500px] max-h-[90vh] relative overflow-hidden transition-all">
+          
+          <!-- Top Bar with Exit Button ("✕" available at all times) -->
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-sky-100 shrink-0">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-sm font-bold shadow-sm">⏱️</span>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900 tracking-tight">60s Speed Drill ⚡</h3>
+                <p id="drill-subtext" class="text-[10px] text-slate-500 font-mono">1-Minute Exam Challenge</p>
+              </div>
+            </div>
+            <button id="close-drill-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors" title="Exit Drill">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- SCREEN 1: PRE-START SCREEN -->
+          <div id="drill-prestart-view" class="flex-1 flex flex-col items-center justify-center text-center p-4">
+            <div class="w-16 h-16 rounded-3xl bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center text-3xl mb-4 shadow-sm animate-pulse">
+              ⚡
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">60-Second Speed Drill ⚡</h3>
+            <p class="text-xs text-slate-500 mb-6 max-w-xs leading-relaxed">
+              Review as many technical concepts as you can in 1 minute.
+            </p>
+
+            <div class="bg-sky-50/70 border border-sky-100 rounded-2xl p-4 w-full mb-6 text-left space-y-2.5">
+              <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                <span class="text-rose-500 font-bold shrink-0">⏱️</span>
+                <span>Fixed 60-second countdown timer</span>
+              </div>
+              <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                <span class="text-sky-600 font-bold shrink-0">👁️</span>
+                <span>Tap "Reveal Answer" anytime to check explanation</span>
+              </div>
+              <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                <span class="text-emerald-600 font-bold shrink-0">✅</span>
+                <span>Mark "Got It!" to count review and master concept</span>
+              </div>
+            </div>
+
+            <button id="start-drill-btn" class="btn-press w-full py-3.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 transition">
+              <span>Start Challenge</span>
+              <span>🚀</span>
+            </button>
+          </div>
+
+          <!-- SCREEN 2: ACTIVE DRILL SCREEN -->
+          <div id="drill-active-view" class="hidden flex-1 flex flex-col justify-between py-1 overflow-y-auto no-scrollbar">
+            
+            <!-- Prominent Top Timer Bar & Score Counter -->
+            <div class="shrink-0 mb-2">
+              <div class="flex items-center justify-between mb-1.5 px-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span id="drill-timer-display" class="font-mono text-sm font-bold text-rose-600">60s</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono text-xs">
+                  <span class="text-slate-500">Cards Reviewed:</span>
+                  <span id="drill-reviewed-counter" class="font-bold text-sky-700 bg-sky-100/70 px-2 py-0.5 rounded-md">0</span>
+                </div>
+              </div>
+
+              <!-- Draining sky-blue timer bar -->
+              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
+                <div id="drill-timer-bar" class="h-full bg-sky-500 transition-all duration-1000 ease-linear rounded-full" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- Card Presentation -->
+            <div class="my-auto flex-1 flex flex-col justify-between py-1 select-text">
+              <!-- Question -->
+              <div class="mb-2">
+                <div class="flex items-center justify-between mb-1">
+                  <span id="drill-card-num" class="px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-lg bg-sky-100/80 text-sky-700 border border-sky-200/60">
+                    #01
+                  </span>
+                  <span id="drill-card-status" class="text-[10px] font-mono text-slate-400 font-medium">Speed Drill</span>
+                </div>
+                <h2 id="drill-question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-snug tracking-tight">
+                  Question text
+                </h2>
+              </div>
+
+              <!-- Answer Box with Reveal Answer toggle -->
+              <div class="py-1">
+                <div id="drill-answer-box" class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative cursor-pointer group">
+                  <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-sky-100">
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
+                      <i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i>
+                      Verified Explanation
+                    </span>
+                    <span id="drill-reveal-toggle-hint" class="text-[10px] font-mono text-sky-600 font-semibold flex items-center gap-1">
+                      <span>👁️ Reveal Answer</span>
+                    </span>
+                  </div>
+
+                  <div class="relative min-h-[44px] flex items-center">
+                    <p id="drill-answer-text" class="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal transition-all duration-200 backdrop-blur-md filter blur-[6px] select-none cursor-pointer">
+                      Answer text
+                    </p>
+                    <div id="drill-reveal-badge" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span class="px-3.5 py-1.5 rounded-full bg-white/95 text-sky-700 font-bold text-xs shadow-md border border-sky-200 flex items-center gap-1.5">
+                        Tap to Reveal Answer 👁️
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div id="drill-action-buttons-wrap" class="pt-3 border-t border-sky-100 flex items-center gap-2.5 shrink-0">
+              <button id="drill-pass-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <span>Pass / Next</span>
+                <span>⏭️</span>
+              </button>
+              <button id="drill-gotit-btn" class="btn-press flex-1 py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                <span>Got It!</span>
+                <span>✅</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SCREEN 3: RESULTS SUMMARY SCREEN -->
+          <div id="drill-results-view" class="hidden flex-1 flex flex-col items-center justify-center text-center p-4">
+            <div class="w-16 h-16 rounded-3xl bg-rose-50 text-rose-500 border border-rose-200/80 flex items-center justify-center text-3xl mb-3 shadow-sm">
+              ⏱️
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Time's Up! ⏱️</h3>
+            <p class="text-xs text-slate-500 mb-5">Your 60-second speed drill results are ready.</p>
+
+            <div class="bg-sky-50/70 border border-sky-100 rounded-2xl p-4 w-full mb-6 text-left space-y-2.5">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500">Cards Reviewed in 60s:</span>
+                <span id="drill-summary-reviewed" class="font-bold text-slate-800 text-sm">0</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500">Cards Mastered:</span>
+                <span id="drill-summary-mastered" class="font-bold text-emerald-600 text-sm">0</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-mono pt-1 border-t border-sky-100/70">
+                <span class="text-slate-500">Speed Rating:</span>
+                <span id="drill-speed-rating" class="font-bold px-2 py-0.5 rounded-full text-[11px] bg-amber-100 text-amber-800 border border-amber-200">
+                  ⚡ Fast Pace
+                </span>
+              </div>
+            </div>
+
+            <button id="exit-drill-btn" class="btn-press w-full py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs shadow-md shadow-sky-500/20 transition">
+              Exit to Hub
+            </button>
+          </div>
+
+        </div>
+      </div>
 
       <!-- FLOATING TOAST FEEDBACK -->
       <div id="toast-wrapper" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-full max-w-xs px-4 flex flex-col items-center gap-1.5"></div>
@@ -645,12 +1010,82 @@
         const desktopNextBtn = document.getElementById('desktop-next-btn');
         const desktopQuestion = document.getElementById('desktop-question');
         const desktopAnswer = document.getElementById('desktop-answer');
+        const desktopRevealBadge = document.getElementById('desktop-reveal-badge');
         const desktopAudioWave = document.getElementById('desktop-audio-wave');
         const desktopSaveBtn = document.getElementById('desktop-save-btn');
         const desktopMasterBtn = document.getElementById('desktop-master-btn');
         const desktopListenBtn = document.getElementById('desktop-listen-btn');
         const desktopGridCount = document.getElementById('desktop-grid-count');
         const desktopCardsContainer = document.getElementById('desktop-cards-container');
+
+        // Gamification & Practice Hub Elements
+        const streakCount = document.getElementById('streak-count');
+        const masteryStatText = document.getElementById('mastery-stat-text');
+        const headerProgressBar = document.getElementById('header-progress-bar');
+        const floatingHubBtn = document.getElementById('floating-hub-btn');
+        const practiceHubModal = document.getElementById('practice-hub-modal');
+        const closePracticeHubBtn = document.getElementById('close-practice-hub-btn');
+        const hubSprintBtn = document.getElementById('hub-sprint-btn');
+        const hubSpeedBtn = document.getElementById('hub-speed-btn');
+        const hubRecallBtn = document.getElementById('hub-recall-btn');
+        const recallStatusPill = document.getElementById('recall-status-pill');
+
+        // Daily 15 Sprint Elements
+        const sprintModal = document.getElementById('sprint-modal');
+        const closeSprintBtn = document.getElementById('close-sprint-btn');
+        const sprintHeaderTitle = document.getElementById('sprint-header-title');
+        const sprintActiveView = document.getElementById('sprint-active-view');
+        const sprintCardNum = document.getElementById('sprint-card-num');
+        const sprintCardMasteredBadge = document.getElementById('sprint-card-mastered-badge');
+        const sprintQuestionText = document.getElementById('sprint-question-text');
+        const sprintAnswerBox = document.getElementById('sprint-answer-box');
+        const sprintAnswerText = document.getElementById('sprint-answer-text');
+        const sprintRevealBadge = document.getElementById('sprint-reveal-badge');
+        const sprintSkipBtn = document.getElementById('sprint-skip-btn');
+        const sprintMasterBtn = document.getElementById('sprint-master-btn');
+        const sprintFinishView = document.getElementById('sprint-finish-view');
+        const sprintSessionPracticed = document.getElementById('sprint-session-practiced');
+        const sprintSessionMastered = document.getElementById('sprint-session-mastered');
+        const sprintFinishStreak = document.getElementById('sprint-finish-streak');
+        const exitSprintBtn = document.getElementById('exit-sprint-btn');
+
+        let sprintCards = [];
+        let sprintCurrentIndex = 0;
+        let sprintMasteredThisSession = 0;
+
+        // Step 4: 60-Second Speed Drill Elements & State
+        const speedDrillModal = document.getElementById('speed-drill-modal');
+        const closeDrillBtn = document.getElementById('close-drill-btn');
+        const drillPrestartView = document.getElementById('drill-prestart-view');
+        const startDrillBtn = document.getElementById('start-drill-btn');
+        const drillActiveView = document.getElementById('drill-active-view');
+        const drillTimerDisplay = document.getElementById('drill-timer-display');
+        const drillReviewedCounter = document.getElementById('drill-reviewed-counter');
+        const drillTimerBar = document.getElementById('drill-timer-bar');
+        const drillCardNum = document.getElementById('drill-card-num');
+        const drillQuestionText = document.getElementById('drill-question-text');
+        const drillAnswerBox = document.getElementById('drill-answer-box');
+        const drillAnswerText = document.getElementById('drill-answer-text');
+        const drillRevealBadge = document.getElementById('drill-reveal-badge');
+        const drillRevealToggleHint = document.getElementById('drill-reveal-toggle-hint');
+        const drillPassBtn = document.getElementById('drill-pass-btn');
+        const drillGotitBtn = document.getElementById('drill-gotit-btn');
+        const drillResultsView = document.getElementById('drill-results-view');
+        const drillSummaryReviewed = document.getElementById('drill-summary-reviewed');
+        const drillSummaryMastered = document.getElementById('drill-summary-mastered');
+        const drillSpeedRating = document.getElementById('drill-speed-rating');
+        const exitDrillBtn = document.getElementById('exit-drill-btn');
+
+        let drillTimer = null;
+        let drillTimeLeft = 60;
+        let drillCards = [];
+        let drillCurrentIndex = 0;
+        let drillReviewedCount = 0;
+        let drillMasteredCount = 0;
+        let drillInputsFrozen = false;
+
+        let activeRecallEnabled = false;
+        let speedTimerInterval = null;
 
         const feedScreen = document.getElementById('feed-screen');
         const gridScreen = document.getElementById('grid-screen');
@@ -888,14 +1323,22 @@
           const total = allCards.length;
           const masteredCount = masteredIds.size;
           const bookmarkedCount = bookmarkedIds.size;
+          const pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
 
           gridCountIndicator.textContent = `${filteredCards.length} cards`;
           countAllEl.textContent = total;
           countMasteredEl.textContent = masteredCount;
           countBookmarkedEl.textContent = bookmarkedCount;
 
+          if (masteryStatText) {
+            masteryStatText.textContent = `${masteredCount}/${total} (${pct}%)`;
+          }
+          if (headerProgressBar) {
+            headerProgressBar.style.width = `${pct}%`;
+          }
+
           if (counterBadge) {
-            if (activeTab === 'reels') {
+            if (activeTab === 'reels' && deviceMode === 'mobile') {
               updateHeaderCounter(currentFeedIndex);
             } else {
               counterBadge.textContent = `${filteredCards.length} Cards`;
@@ -981,15 +1424,18 @@
             const cardItem = document.createElement('div');
             
             // Full height card matching container with elevated surface and subtle border
-            cardItem.className = 'reel-card-item w-full h-full relative flex flex-col justify-between overflow-hidden bg-white/95 border-b border-sky-100';
-            cardItem.style.height = 'calc(100dvh - 140px)';
+            cardItem.className = 'reel-card-item w-full h-[calc(100dvh-175px)] flex-shrink-0 shrink-0 relative flex flex-col justify-between overflow-hidden bg-white/95 border-b border-sky-100';
+            cardItem.style.height = 'calc(100dvh - 175px)';
+            cardItem.style.scrollSnapAlign = 'start';
+            cardItem.style.scrollSnapStop = 'always';
+            cardItem.style.flexShrink = '0';
             cardItem.dataset.index = index;
             cardItem.dataset.id = item.id;
             cardItem.id = `feed-item-${index}`;
 
             cardItem.innerHTML = `
               <!-- Inner Card Content Wrapper: Generous padding, structured vertical flow -->
-              <div class="h-full w-full p-6 flex flex-col justify-between relative bg-transparent">
+              <div class="h-full w-full p-6 pb-2 flex flex-col justify-between relative bg-transparent overflow-y-auto no-scrollbar">
                 
                 <!-- TOP SECTION: Question number badge & status -->
                 <div>
@@ -1027,7 +1473,7 @@
 
                 <!-- LOWER SECTION: Soft-tinted Answer card (bg-sky-50/70 border border-sky-100 text-slate-800) -->
                 <div class="my-auto flex-1 flex flex-col justify-center py-3 select-text">
-                  <div class="bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative">
+                  <div class="answer-card-box bg-sky-50/70 border border-sky-100 text-slate-800 rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.08)] relative cursor-pointer group/ans">
                     <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-sky-100">
                       <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 flex items-center gap-1.5">
                         <i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i>
@@ -1041,14 +1487,21 @@
                       </div>
                     </div>
 
-                    <p class="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
-                      ${escapeHtml(item.answer)}
-                    </p>
+                    <div class="relative">
+                      <p class="answer-text-content text-xs sm:text-sm text-slate-800 leading-relaxed font-normal transition-all duration-200 ${activeRecallEnabled ? 'backdrop-blur-md filter blur-[6px] select-none cursor-pointer' : ''}">
+                        ${escapeHtml(item.answer)}
+                      </p>
+                      <div class="reveal-badge-overlay ${activeRecallEnabled ? '' : 'hidden'} absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span class="px-3.5 py-1.5 rounded-full bg-white/95 text-sky-700 font-bold text-xs shadow-md border border-sky-200 flex items-center gap-1.5">
+                          Tap to Reveal Answer 👁️
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- BOTTOM ROW: 3 EQUAL-WIDTH HORIZONTAL ACTION BUTTONS (Just above grounded nav bar) -->
-                <div class="pt-2 flex items-center justify-between gap-2.5 w-full">
+                <div class="pt-2 pb-6 mb-4 flex items-center justify-between gap-2.5 w-full">
                   
                   <!-- Action 1: Save / Bookmark Button -->
                   <button 
@@ -1091,11 +1544,30 @@
 
                 </div>
 
+                <!-- Bottom Clearance Spacer for Fixed Navigation Bar -->
+                <div class="h-8 w-full flex-shrink-0"></div>
+
               </div>
             `;
 
             feedItemsList.appendChild(cardItem);
             observer.observe(cardItem);
+
+            const ansBox = cardItem.querySelector('.answer-card-box');
+            if (ansBox) {
+              ansBox.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                if (!activeRecallEnabled) return;
+                const p = ansBox.querySelector('.answer-text-content');
+                const badge = ansBox.querySelector('.reveal-badge-overlay');
+                if (p) {
+                  p.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+                }
+                if (badge) {
+                  badge.classList.add('hidden');
+                }
+              });
+            }
           });
         }
 
@@ -1173,6 +1645,7 @@
           }
 
           updateHeaderCounter(index);
+          resetReelAnswersBlur();
           renderIcons();
         }
 
@@ -1180,6 +1653,7 @@
           if (index < 0 || index >= filteredCards.length) return;
           if (currentFeedIndex !== index) {
             stopAudio(true);
+            resetReelAnswersBlur();
           }
           currentFeedIndex = index;
           const targetCard = feedItemsList.children[index];
@@ -1286,7 +1760,16 @@
           if (desktopCardId) desktopCardId.textContent = `#${String(card.id).padStart(2, '0')}`;
           if (desktopCardIndex) desktopCardIndex.textContent = `Question ${safeIdx + 1} of ${filteredCards.length}`;
           if (desktopQuestion) desktopQuestion.textContent = card.question;
-          if (desktopAnswer) desktopAnswer.textContent = card.answer;
+          if (desktopAnswer) {
+            desktopAnswer.textContent = card.answer;
+            if (activeRecallEnabled) {
+              desktopAnswer.classList.add('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+              if (desktopRevealBadge) desktopRevealBadge.classList.remove('hidden');
+            } else {
+              desktopAnswer.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+              if (desktopRevealBadge) desktopRevealBadge.classList.add('hidden');
+            }
+          }
 
           if (desktopBadgeMastered) desktopBadgeMastered.classList.toggle('hidden', !isMastered);
           if (desktopBadgeBookmarked) desktopBadgeBookmarked.classList.toggle('hidden', !isBookmarked);
@@ -1440,7 +1923,473 @@
           });
         }
 
-        // Snap scroll observer: auto-cancel speech on card change
+        function resetReelAnswersBlur() {
+          if (!activeRecallEnabled) return;
+          const cards = feedItemsList.querySelectorAll('.reel-card-item');
+          cards.forEach(card => {
+            const p = card.querySelector('.answer-text-content');
+            const badge = card.querySelector('.reveal-badge-overlay');
+            if (p) {
+              p.classList.add('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+            }
+            if (badge) {
+              badge.classList.remove('hidden');
+            }
+          });
+        }
+
+        const desktopAnsBox = document.querySelector('.desktop-answer-card-box');
+        if (desktopAnsBox) {
+          desktopAnsBox.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            if (!activeRecallEnabled) return;
+            if (desktopAnswer) {
+              desktopAnswer.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+            }
+            if (desktopRevealBadge) {
+              desktopRevealBadge.classList.add('hidden');
+            }
+          });
+        }
+
+        // Practice Hub Event Handlers
+        if (floatingHubBtn) {
+          floatingHubBtn.addEventListener('click', () => {
+            if (practiceHubModal) {
+              practiceHubModal.classList.remove('hidden');
+              renderIcons();
+            }
+          });
+        }
+
+        if (closePracticeHubBtn) {
+          closePracticeHubBtn.addEventListener('click', () => {
+            if (practiceHubModal) practiceHubModal.classList.add('hidden');
+          });
+        }
+
+        if (practiceHubModal) {
+          practiceHubModal.addEventListener('click', (e) => {
+            if (e.target === practiceHubModal) practiceHubModal.classList.add('hidden');
+          });
+        }
+
+        // STEP 3: DAILY 15 SPRINT MODE ENGINE
+        function openDailySprint() {
+          if (practiceHubModal) practiceHubModal.classList.add('hidden');
+          if (allCards.length === 0) {
+            showToast('No cards loaded yet', 'info');
+            return;
+          }
+
+          // Card Queue: Select 15 random or unmastered questions from the active deck
+          const unmastered = allCards.filter(c => !masteredIds.has(c.id));
+          if (unmastered.length >= 15) {
+            sprintCards = [...unmastered].sort(() => 0.5 - Math.random()).slice(0, 15);
+          } else if (unmastered.length > 0) {
+            const needed = 15 - unmastered.length;
+            const mastered = allCards.filter(c => masteredIds.has(c.id)).sort(() => 0.5 - Math.random());
+            sprintCards = [...unmastered, ...mastered.slice(0, needed)].sort(() => 0.5 - Math.random());
+          } else {
+            sprintCards = [...allCards].sort(() => 0.5 - Math.random()).slice(0, 15);
+          }
+
+          if (sprintCards.length === 0) {
+            sprintCards = [...allCards];
+          }
+
+          sprintCurrentIndex = 0;
+          sprintMasteredThisSession = 0;
+
+          if (sprintFinishView) sprintFinishView.classList.add('hidden');
+          if (sprintActiveView) sprintActiveView.classList.remove('hidden');
+          if (sprintModal) sprintModal.classList.remove('hidden');
+
+          renderSprintCard();
+          renderIcons();
+        }
+
+        function renderSprintCard() {
+          if (sprintCurrentIndex >= sprintCards.length) {
+            finishSprint();
+            return;
+          }
+
+          const card = sprintCards[sprintCurrentIndex];
+          if (!card) return;
+
+          const total = sprintCards.length;
+          if (sprintHeaderTitle) {
+            sprintHeaderTitle.textContent = `Sprint: Card ${sprintCurrentIndex + 1} of ${total}`;
+          }
+
+          if (sprintCardNum) {
+            sprintCardNum.textContent = `#${String(card.id).padStart(2, '0')}`;
+          }
+
+          const isMastered = masteredIds.has(card.id);
+          if (sprintCardMasteredBadge) {
+            sprintCardMasteredBadge.classList.toggle('hidden', !isMastered);
+          }
+
+          if (sprintQuestionText) {
+            sprintQuestionText.textContent = card.question;
+          }
+
+          if (sprintAnswerText) {
+            sprintAnswerText.textContent = card.answer;
+            if (activeRecallEnabled) {
+              sprintAnswerText.classList.add('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+              if (sprintRevealBadge) sprintRevealBadge.classList.remove('hidden');
+            } else {
+              sprintAnswerText.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+              if (sprintRevealBadge) sprintRevealBadge.classList.add('hidden');
+            }
+          }
+
+          renderIcons();
+        }
+
+        function finishSprint() {
+          if (sprintActiveView) sprintActiveView.classList.add('hidden');
+          if (sprintFinishView) sprintFinishView.classList.remove('hidden');
+
+          if (sprintSessionPracticed) {
+            sprintSessionPracticed.textContent = `${sprintCards.length} / ${sprintCards.length}`;
+          }
+          if (sprintSessionMastered) {
+            sprintSessionMastered.textContent = String(sprintMasteredThisSession);
+          }
+
+          // Lock today's streak (+1 to 🔥 streak if not already counted today)
+          const lockedStreak = lockTodayStreak();
+          if (sprintFinishStreak) {
+            sprintFinishStreak.textContent = String(lockedStreak);
+          }
+
+          triggerMasteryCelebration();
+          showToast(`Sprint Finished! 🎉 Locked 🔥 ${lockedStreak} Day Streak`, 'success');
+          renderIcons();
+        }
+
+        function closeDailySprint() {
+          if (sprintModal) sprintModal.classList.add('hidden');
+          filterAndRender(true);
+        }
+
+        if (hubSprintBtn) {
+          hubSprintBtn.addEventListener('click', openDailySprint);
+        }
+
+        if (sprintSkipBtn) {
+          sprintSkipBtn.addEventListener('click', () => {
+            sprintCurrentIndex++;
+            if (sprintCurrentIndex >= sprintCards.length) {
+              finishSprint();
+            } else {
+              renderSprintCard();
+            }
+          });
+        }
+
+        if (sprintMasterBtn) {
+          sprintMasterBtn.addEventListener('click', () => {
+            const currentCard = sprintCards[sprintCurrentIndex];
+            if (currentCard) {
+              if (!masteredIds.has(currentCard.id)) {
+                masteredIds.add(currentCard.id);
+                bookmarkedIds.delete(currentCard.id);
+                sprintMasteredThisSession++;
+                saveStorage();
+                updateBadges();
+                triggerMasteryCelebration();
+              }
+            }
+            sprintCurrentIndex++;
+            if (sprintCurrentIndex >= sprintCards.length) {
+              finishSprint();
+            } else {
+              renderSprintCard();
+            }
+          });
+        }
+
+        if (sprintAnswerBox) {
+          sprintAnswerBox.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            if (!activeRecallEnabled) return;
+            if (sprintAnswerText) {
+              sprintAnswerText.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+            }
+            if (sprintRevealBadge) {
+              sprintRevealBadge.classList.add('hidden');
+            }
+          });
+        }
+
+        if (closeSprintBtn) {
+          closeSprintBtn.addEventListener('click', closeDailySprint);
+        }
+
+        if (exitSprintBtn) {
+          exitSprintBtn.addEventListener('click', closeDailySprint);
+        }
+
+        if (sprintModal) {
+          sprintModal.addEventListener('click', (e) => {
+            if (e.target === sprintModal) closeDailySprint();
+          });
+        }
+
+        // STEP 4: 60-SECOND SPEED DRILL MODE ENGINE
+        function openSpeedDrillModal() {
+          if (practiceHubModal) practiceHubModal.classList.add('hidden');
+          clearInterval(drillTimer);
+          drillTimer = null;
+          drillInputsFrozen = false;
+
+          if (drillPrestartView) drillPrestartView.classList.remove('hidden');
+          if (drillActiveView) drillActiveView.classList.add('hidden');
+          if (drillResultsView) drillResultsView.classList.add('hidden');
+          if (speedDrillModal) speedDrillModal.classList.remove('hidden');
+          renderIcons();
+        }
+
+        function startSpeedDrill() {
+          if (allCards.length === 0) {
+            showToast('No cards loaded yet', 'info');
+            return;
+          }
+
+          drillCards = [...allCards].sort(() => 0.5 - Math.random());
+          drillCurrentIndex = 0;
+          drillReviewedCount = 0;
+          drillMasteredCount = 0;
+          drillTimeLeft = 60;
+          drillInputsFrozen = false;
+
+          if (drillReviewedCounter) drillReviewedCounter.textContent = '0';
+          if (drillTimerDisplay) {
+            drillTimerDisplay.textContent = '60s';
+            drillTimerDisplay.className = 'font-mono text-sm font-bold text-rose-600';
+          }
+          if (drillTimerBar) {
+            drillTimerBar.style.width = '100%';
+            drillTimerBar.className = 'h-full bg-sky-500 transition-all duration-1000 ease-linear rounded-full';
+          }
+
+          if (drillPrestartView) drillPrestartView.classList.add('hidden');
+          if (drillResultsView) drillResultsView.classList.add('hidden');
+          if (drillActiveView) drillActiveView.classList.remove('hidden');
+
+          renderDrillCard();
+          renderIcons();
+
+          clearInterval(drillTimer);
+          drillTimer = setInterval(() => {
+            drillTimeLeft--;
+
+            if (drillTimerDisplay) {
+              drillTimerDisplay.textContent = `${drillTimeLeft}s`;
+              if (drillTimeLeft <= 10) {
+                drillTimerDisplay.className = 'font-mono text-sm font-bold text-rose-600 animate-pulse';
+              }
+            }
+
+            if (drillTimerBar) {
+              const pct = Math.max(0, (drillTimeLeft / 60) * 100);
+              drillTimerBar.style.width = `${pct}%`;
+              if (drillTimeLeft <= 15) {
+                drillTimerBar.className = 'h-full bg-rose-500 transition-all duration-1000 ease-linear rounded-full';
+              }
+            }
+
+            // Auto Stop: as soon as the timer hits 0, freeze inputs immediately
+            if (drillTimeLeft <= 0) {
+              clearInterval(drillTimer);
+              drillTimer = null;
+              drillInputsFrozen = true;
+              showDrillResults();
+            }
+          }, 1000);
+        }
+
+        function renderDrillCard() {
+          if (drillCards.length === 0) return;
+          if (drillCurrentIndex >= drillCards.length) {
+            drillCards = [...allCards].sort(() => 0.5 - Math.random());
+            drillCurrentIndex = 0;
+          }
+
+          const card = drillCards[drillCurrentIndex];
+          if (!card) return;
+
+          if (drillCardNum) {
+            drillCardNum.textContent = `#${String(card.id).padStart(2, '0')}`;
+          }
+
+          if (drillQuestionText) {
+            drillQuestionText.textContent = card.question;
+          }
+
+          if (drillAnswerText) {
+            drillAnswerText.textContent = card.answer;
+            // Default to blurred so user can test recall and tap to reveal
+            drillAnswerText.classList.add('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+          }
+
+          if (drillRevealBadge) {
+            drillRevealBadge.classList.remove('hidden');
+          }
+
+          if (drillRevealToggleHint) {
+            drillRevealToggleHint.innerHTML = '<span>👁️ Reveal Answer</span>';
+          }
+
+          renderIcons();
+        }
+
+        function toggleDrillAnswerReveal() {
+          if (!drillAnswerText) return;
+          const isBlurred = drillAnswerText.classList.contains('backdrop-blur-md');
+          if (isBlurred) {
+            drillAnswerText.classList.remove('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+            if (drillRevealBadge) drillRevealBadge.classList.add('hidden');
+            if (drillRevealToggleHint) drillRevealToggleHint.innerHTML = '<span class="text-emerald-600 font-bold">✓ Revealed</span>';
+          } else {
+            drillAnswerText.classList.add('backdrop-blur-md', 'filter', 'blur-[6px]', 'select-none', 'cursor-pointer');
+            if (drillRevealBadge) drillRevealBadge.classList.remove('hidden');
+            if (drillRevealToggleHint) drillRevealToggleHint.innerHTML = '<span>👁️ Reveal Answer</span>';
+          }
+        }
+
+        function handleDrillPass() {
+          if (drillInputsFrozen) return;
+          drillReviewedCount++;
+          if (drillReviewedCounter) drillReviewedCounter.textContent = String(drillReviewedCount);
+
+          drillCurrentIndex++;
+          renderDrillCard();
+        }
+
+        function handleDrillGotIt() {
+          if (drillInputsFrozen) return;
+          drillReviewedCount++;
+          drillMasteredCount++;
+          if (drillReviewedCounter) drillReviewedCounter.textContent = String(drillReviewedCount);
+
+          const currentCard = drillCards[drillCurrentIndex];
+          if (currentCard && !masteredIds.has(currentCard.id)) {
+            masteredIds.add(currentCard.id);
+            bookmarkedIds.delete(currentCard.id);
+            saveStorage();
+            updateBadges();
+            triggerMasteryCelebration();
+            lockTodayStreak();
+          }
+
+          drillCurrentIndex++;
+          renderDrillCard();
+        }
+
+        function showDrillResults() {
+          clearInterval(drillTimer);
+          drillTimer = null;
+          drillInputsFrozen = true;
+
+          if (drillActiveView) drillActiveView.classList.add('hidden');
+          if (drillPrestartView) drillPrestartView.classList.add('hidden');
+          if (drillResultsView) drillResultsView.classList.remove('hidden');
+
+          if (drillSummaryReviewed) drillSummaryReviewed.textContent = String(drillReviewedCount);
+          if (drillSummaryMastered) drillSummaryMastered.textContent = String(drillMasteredCount);
+
+          // Speed rating calculation
+          let ratingText = '⚡ Warm Up';
+          let ratingClass = 'bg-slate-100 text-slate-700 border-slate-200';
+          if (drillReviewedCount >= 14) {
+            ratingText = '⚡ Lightning Fast';
+            ratingClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          } else if (drillReviewedCount >= 8) {
+            ratingText = '⚡ Fast Pace';
+            ratingClass = 'bg-amber-100 text-amber-800 border-amber-200';
+          } else if (drillReviewedCount >= 5) {
+            ratingText = '⚡ Steady Pace';
+            ratingClass = 'bg-sky-100 text-sky-800 border-sky-200';
+          }
+
+          if (drillSpeedRating) {
+            drillSpeedRating.textContent = ratingText;
+            drillSpeedRating.className = `font-bold px-2.5 py-0.5 rounded-full text-[11px] border ${ratingClass}`;
+          }
+
+          triggerMasteryCelebration();
+          showToast(`Time's Up! ⏱️ ${drillReviewedCount} cards reviewed`, 'info');
+          renderIcons();
+        }
+
+        function closeSpeedDrill() {
+          clearInterval(drillTimer);
+          drillTimer = null;
+          drillInputsFrozen = false;
+          if (speedDrillModal) speedDrillModal.classList.add('hidden');
+          filterAndRender(true);
+        }
+
+        if (hubSpeedBtn) {
+          hubSpeedBtn.addEventListener('click', openSpeedDrillModal);
+        }
+
+        if (startDrillBtn) {
+          startDrillBtn.addEventListener('click', startSpeedDrill);
+        }
+
+        if (drillAnswerBox) {
+          drillAnswerBox.addEventListener('click', toggleDrillAnswerReveal);
+        }
+
+        if (drillPassBtn) {
+          drillPassBtn.addEventListener('click', handleDrillPass);
+        }
+
+        if (drillGotitBtn) {
+          drillGotitBtn.addEventListener('click', handleDrillGotIt);
+        }
+
+        if (closeDrillBtn) {
+          closeDrillBtn.addEventListener('click', closeSpeedDrill);
+        }
+
+        if (exitDrillBtn) {
+          exitDrillBtn.addEventListener('click', closeSpeedDrill);
+        }
+
+        if (speedDrillModal) {
+          speedDrillModal.addEventListener('click', (e) => {
+            if (e.target === speedDrillModal) closeSpeedDrill();
+          });
+        }
+
+        // STEP 2: ACTIVE RECALL / BLUR MODE TOGGLE
+        if (hubRecallBtn) {
+          hubRecallBtn.addEventListener('click', () => {
+            activeRecallEnabled = !activeRecallEnabled;
+            if (recallStatusPill) {
+              recallStatusPill.textContent = activeRecallEnabled ? 'ON' : 'OFF';
+              recallStatusPill.className = activeRecallEnabled 
+                ? 'text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200 font-bold'
+                : 'text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold';
+            }
+            if (practiceHubModal) practiceHubModal.classList.add('hidden');
+            showToast(`👁️ Active Recall Mode ${activeRecallEnabled ? 'ON (Answers blurred)' : 'OFF'}`, 'info');
+            filterAndRender(true);
+            if (deviceMode === 'desktop') {
+              updateDesktopActiveCard();
+            }
+          });
+        }
+
+        // Snap scroll observer: auto-cancel speech on card change & reset blur
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
@@ -1450,6 +2399,7 @@
                   // Active card changed: cancel voice readout immediately!
                   stopAudio(true);
                   currentFeedIndex = idx;
+                  resetReelAnswersBlur();
                 }
                 if (activeTab === 'reels') {
                   updateHeaderCounter(idx);
@@ -1462,7 +2412,7 @@
           threshold: 0.5
         });
 
-        // Scroll settle fallback: cancel speech if active card position changed
+        // Scroll settle fallback: cancel speech if active card position changed & reset blur
         let scrollSettleTimer;
         feedScreen.addEventListener('scroll', () => {
           clearTimeout(scrollSettleTimer);
@@ -1474,6 +2424,7 @@
                 stopAudio(true);
                 currentFeedIndex = estimatedIdx;
                 updateHeaderCounter(estimatedIdx);
+                resetReelAnswersBlur();
               }
             }
           }, 80);
@@ -1536,6 +2487,98 @@
         });
 
         // 6. CARD ACTIONS: MASTER, BOOKMARK, AUDIO TTS
+        function triggerMasteryCelebration() {
+          if (masteryStatText) {
+            masteryStatText.classList.add('text-emerald-500', 'scale-110');
+            setTimeout(() => {
+              if (masteryStatText) masteryStatText.classList.remove('text-emerald-500', 'scale-110');
+            }, 600);
+          }
+
+          const colors = ['#0ea5e9', '#38bdf8', '#10b981', '#34d399', '#f59e0b'];
+          const container = document.createElement('div');
+          container.className = 'fixed inset-0 pointer-events-none z-50 overflow-hidden';
+          for (let i = 0; i < 22; i++) {
+            const p = document.createElement('div');
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const left = 35 + Math.random() * 30;
+            const top = 35 + Math.random() * 20;
+            const dx = (Math.random() - 0.5) * 170;
+            const dy = -50 - Math.random() * 85;
+            const rot = Math.random() * 360;
+            p.style.cssText = `position:absolute;left:${left}%;top:${top}%;width:6px;height:6px;border-radius:2px;background:${color};transform:translate(0,0) rotate(0deg);transition:transform 0.65s cubic-bezier(0.2,0.8,0.2,1),opacity 0.65s ease;opacity:1;`;
+            container.appendChild(p);
+            setTimeout(() => {
+              p.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+              p.style.opacity = '0';
+            }, 20);
+          }
+          document.body.appendChild(container);
+          setTimeout(() => container.remove(), 750);
+        }
+
+        function lockTodayStreak() {
+          const STREAK_KEY = 'eee_study_streak_v1';
+          const today = new Date().toISOString().slice(0, 10);
+          let streak = 1;
+          try {
+            const raw = localStorage.getItem(STREAK_KEY);
+            if (raw) {
+              const data = JSON.parse(raw);
+              if (data && data.lastDate) {
+                if (data.lastDate === today) {
+                  streak = data.count || 1;
+                  if (streakCount) streakCount.textContent = streak;
+                  return streak;
+                }
+                const last = new Date(data.lastDate);
+                const current = new Date(today);
+                const diffDays = Math.round((current - last) / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                  streak = (data.count || 0) + 1;
+                } else {
+                  streak = 1;
+                }
+              }
+            }
+          } catch (e) {}
+          localStorage.setItem(STREAK_KEY, JSON.stringify({ lastDate: today, count: streak }));
+          if (streakCount) streakCount.textContent = streak;
+          return streak;
+        }
+
+        function initStreakDisplay() {
+          const STREAK_KEY = 'eee_study_streak_v1';
+          const today = new Date().toISOString().slice(0, 10);
+          let streak = 1;
+          try {
+            const raw = localStorage.getItem(STREAK_KEY);
+            if (raw) {
+              const data = JSON.parse(raw);
+              if (data && data.lastDate) {
+                if (data.lastDate === today) {
+                  streak = data.count || 1;
+                } else {
+                  const last = new Date(data.lastDate);
+                  const current = new Date(today);
+                  const diffDays = Math.round((current - last) / (1000 * 60 * 60 * 24));
+                  if (diffDays === 1) {
+                    streak = data.count || 1;
+                  } else {
+                    streak = 1;
+                  }
+                }
+              }
+            }
+          } catch (e) {}
+          if (streakCount) streakCount.textContent = streak;
+          return streak;
+        }
+
+        function updateStreakData() {
+          return lockTodayStreak();
+        }
+
         function toggleMastered(id) {
           const numId = Number(id);
           if (masteredIds.has(numId)) {
@@ -1545,6 +2588,8 @@
             masteredIds.add(numId);
             bookmarkedIds.delete(numId);
             showToast(`Card #${numId} Mastered! ★`, 'success');
+            triggerMasteryCelebration();
+            lockTodayStreak();
           }
           saveStorage();
           filterAndRender(true);
@@ -1990,6 +3035,7 @@
         window.addEventListener('DOMContentLoaded', () => {
           checkAdminRoute();
           window.addEventListener('hashchange', checkAdminRoute);
+          initStreakDisplay();
 
           // Check first-launch device selector
           const savedMode = sessionStorage.getItem('eee_device_mode');

@@ -1,6 +1,6 @@
 {
   "name": "CosmoStudy - EEE Deep Space Flashcard Deck",
-  "description": "Distraction-free cosmological study web app with Instagram-style snap feed, grid navigation, and EEE flashcards.",
+  "description": "Distraction-free cosmological 3D study web app with Three.js starfield, Instagram-style reels, desktop dashboard, and EEE flashcards.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
